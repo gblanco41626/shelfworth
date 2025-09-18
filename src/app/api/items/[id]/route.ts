@@ -4,7 +4,7 @@ import type { UpdateItemData } from '@/types'
 
 // GET /api/items/[id] - Get specific item
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -38,10 +38,9 @@ export async function PUT(
   try {
     const body: UpdateItemData = await request.json()
     const { name, categoryId } = body
-    const { id } = await params
 
     const item = await db.item.update({
-      where: { id: id },
+      where: { id: params.id },
       data: {
         ...(name && { name }),
         ...(categoryId !== undefined && { categoryId: categoryId || null })
