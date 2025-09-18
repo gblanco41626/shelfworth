@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  categories  Category[]
+  items  Item[]
+  purchases   Purchase[]
+  stores      Store[]
+
+  @@map("users")
+}
+
+model Category {
+  id     String @id @default(cuid())
+  name   String
+  userId String
+
+  // Relations
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items Item[]
+
+  @@unique([name, userId])
+  @@map("categories")
+}
+
+model Store {
+  id     String @id @default(cuid())
+  name   String
+  userId String
+
+  // Relations
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  purchases  Purchase[]
+
+  @@unique([name, userId])
+  @@map("stores")
+}
+
+model Item {
+  id         String   @id @default(cuid())
+  name       String   // Generic item name like "Milk", "Bread", "Apples"
+  stock      Int      @default(0)
+  categoryId String?
+  userId     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category     Category?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  purchases Purchase[]
+
+  @@unique([name, userId])
+  @@map("items")
+}
+
+model Purchase {
+  id             String    @id @default(cuid())
+  itemId    String    // Links to the generic item
+  brand          String?   // e.g., "Organic Valley", "Wonder Bread"
+  unit           String    // e.g., "L", "g", "pack", "box", "oz"
+  amount         Float     // e.g., 1.0, 500, 2
+  dateBought     DateTime?
+  expirationDate DateTime?
+  quantity       Int       @default(1) // How many of this specific item
+  price          Float     // Price paid for this specific item
+  userId         String
+  storeId        String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Relations
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  store     Store?    @relation(fields: [storeId], references: [id], onDelete: SetNull)
+
+  @@map("purchases")
+}

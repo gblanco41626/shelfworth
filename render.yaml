@@ -1,0 +1,18 @@
+# render.yaml
+services:
+  - type: web
+    name: shelfworth
+    env: node
+    plan: starter
+    runtime: node
+    repo: https://github.com/you/your-repo
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: DATABASE_URL
+        value: file:/var/data/prod.db
+    disk:
+      name: data
+      mountPath: /var/data
+      sizeGB: 5
+    postDeployCommand: npx prisma migrate deploy

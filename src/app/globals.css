@@ -1,26 +1,57 @@
 @import "tailwindcss";
 
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f9fafb; /* light cool background */
+  --foreground: #1f2937; /* slate-800 */
+
+
+  --accent-blue: #2563eb; /* blue-600 */
+  --accent-blue-hover: #1d4ed8; /* blue-700 */
+  --accent-earth: #475569; /* slate-600 */
+  --accent-earth-hover: #334155; /* slate-700 */
+
+
+  --card-bg: #ffffff;
+  --card-border: #e2e8f0; /* slate-200 */
+  --muted: #64748b; /* slate-500 */
 }
+
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-accent: var(--accent-blue);
+  --color-accent-earth: var(--accent-earth);
+  --font-sans: var(--font-geist-sans, ui-sans-serif, system-ui);
+  --font-mono: var(--font-geist-mono, ui-monospace, monospace);
 }
+
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0f172a; /* slate-900 */
+    --foreground: #f1f5f9; /* slate-100 */
+
+
+    --accent-blue: #3b82f6; /* blue-500 */
+    --accent-blue-hover: #2563eb; /* blue-600 */
+    --accent-earth: #94a3b8; /* slate-400 */
+    --accent-earth-hover: #64748b; /* slate-500 */
+
+
+    --card-bg: #1e293b; /* slate-800 */
+    --card-border: #334155; /* slate-700 */
+    --muted: #94a3b8; /* slate-400 */
   }
 }
+
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
