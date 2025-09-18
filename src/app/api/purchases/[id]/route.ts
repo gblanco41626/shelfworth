@@ -4,12 +4,14 @@ import type { UpdatePurchaseData } from '@/types'
 
 // GET /api/purchases/[id] - Get specific purchase
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string; }> }
 ) {
   try {
+    const { id } = await params
+
     const purchase = await db.purchase.findUnique({
-      where: { id: params.id },
+      where: { id: id },
       include: { item: { include: { category: true } } }
     })
 
@@ -33,9 +35,11 @@ export async function GET(
 // PUT /api/purchases/[id] - Update purchase
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string; }> }
 ) {
   try {
+    const { id } = await params
+
     const body: UpdatePurchaseData = await request.json()
     const { 
       brand, unit, amount, dateBought, 
@@ -43,7 +47,7 @@ export async function PUT(
     } = body
 
     const purchase = await db.purchase.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         ...(brand !== undefined && { brand }),
         ...(unit && { unit }),
@@ -75,12 +79,14 @@ export async function PUT(
 
 // DELETE /api/purchases/[id] - Delete purchase
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string; }> }
 ) {
   try {
+    const { id } = await params
+
     await db.purchase.delete({
-      where: { id: params.id }
+      where: { id: id }
     })
 
     return NextResponse.json({ message: 'Grocery item deleted successfully' })

@@ -5,11 +5,13 @@ import type { UpdateItemData } from '@/types'
 // GET /api/items/[id] - Get specific item
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string; }> }
 ) {
   try {
+    const { id } = await params
+
     const item = await db.item.findUnique({
-      where: { id: params.id },
+      where: { id: id },
       include: { category: true }
     })
 
@@ -33,14 +35,16 @@ export async function GET(
 // PUT /api/items/[id] - Update item
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string; }> }
 ) {
   try {
+    const { id } = await params
+
     const body: UpdateItemData = await request.json()
     const { name, categoryId } = body
 
     const item = await db.item.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         ...(name && { name }),
         ...(categoryId !== undefined && { categoryId: categoryId || null })
@@ -60,12 +64,14 @@ export async function PUT(
 
 // DELETE /api/items/[id] - Delete item
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string; }> }
 ) {
   try {
+    const { id } = await params
+
     await db.item.delete({
-      where: { id: params.id }
+      where: { id: id }
     })
 
     return NextResponse.json({ message: 'item deleted successfully' })
