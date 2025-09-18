@@ -130,8 +130,8 @@ export function PurchaseForm({
             required
           >
             <option value="">Select unit</option>
-            <option value="L">L (Liters)</option>
-            <option value="mL">mL (Milliliters)</option>
+            <option value="l">L (Liters)</option>
+            <option value="ml">mL (Milliliters)</option>
             <option value="g">g (Grams)</option>
             <option value="kg">kg (Kilograms)</option>
             <option value="oz">oz (Ounces)</option>
