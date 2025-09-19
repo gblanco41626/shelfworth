@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, Card, Table } from "@/components/tokens";
 import { Category, CreateCategoryData } from "@/types";
-import { CategoryForm } from "@/components/admin/CategoryForm";
+import { CategoryForm } from "@/components/admin/category-form";
 import { Pencil, Trash2 } from "lucide-react";
 import { Icon } from "@/components/tokens";
 

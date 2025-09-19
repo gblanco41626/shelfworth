@@ -3,14 +3,15 @@
 import React, { useState, useEffect } from "react";
 import { Button, Card, Table} from "@/components/tokens"
 import { Item, Category, CreateItemData } from "@/types";
-import { ItemForm } from "@/components/admin/ItemForm";
-import { Pencil, Trash2 } from "lucide-react";
+import { ItemForm } from "@/components/admin/item-form";
+import { Pencil, Trash2, Search } from "lucide-react";
 import { Icon } from "@/components/tokens";
 
 export default function Items() {
   const [items, setItems] = useState<Item[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [editingItem, setEditingItem] = useState<Item | null>(null)
+  const [itemQuery, setItemQuery] = useState("");
 
   // Fetch data on component mount
   useEffect(() => {
@@ -53,7 +54,6 @@ export default function Items() {
 
       if (response.ok) {
         fetchItems()
-        // setFormMode('none')
       }
     } catch (error) {
       console.error('Error adding item:', error)
@@ -96,6 +96,14 @@ export default function Items() {
     }
   }
 
+  const filteredItems = items.filter((i) => {
+    const q = itemQuery.trim().toLowerCase();
+    if (!q) return true;
+    const name = i.name.toLowerCase();
+    const cat = (categories.find((c) => c.id === i.categoryId)?.name || "").toLowerCase();
+    return name.includes(q) || cat.includes(q);
+  });
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <Card title={editingItem ? "Edit Item" : "New Item"} icon={<Icon.Item />}> 
@@ -103,7 +111,6 @@ export default function Items() {
           categories={categories}
           onSubmit={editingItem ? handleUpdateItem : handleAddItem}
           onCancel={() => {
-            // setFormMode('none')
             setEditingItem(null)
           }}
           initialData={editingItem || undefined}
@@ -111,9 +118,23 @@ export default function Items() {
         />
       </Card>
 
-      <Card title="Items" icon={<Icon.Item />}> 
+      <Card
+        title="Items"
+        icon={<Icon.Item />}
+        actions={
+          <div className="relative w-full sm:w-72">
+            <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <input
+              value={itemQuery}
+              onChange={(e) => setItemQuery(e.target.value)}
+              placeholder="Search items or category"
+              className="w-full rounded-lg border border-slate-300 pl-9 pr-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+            />
+          </div>
+        }
+      > 
         <Table columns={["Name", "Stock", "Category", "Updated", "Actions"]}>
-          {items.map((i) => (
+          {filteredItems.map((i) => (
             <tr key={i.id} className="hover:bg-slate-50/50">
               <td className="px-4 py-2 text-sm text-slate-700">{i.name}</td>
               <td className="px-4 py-2 text-sm tabular-nums">{i.stock}</td>

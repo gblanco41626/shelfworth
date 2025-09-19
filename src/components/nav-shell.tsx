@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
-import { SubTabBar, SubTab } from "./SubTabBar";
+import { SubTabBar, SubTab } from "./subtab-bar";
 
 type Tab = { href: string; label: string };
 

@@ -1,10 +1,11 @@
 "use client"
 
 import React from "react";
-import NavShell from "@/components/NavShell";
+import NavShell from "@/components/nav-shell";
 import { Icon } from "@/components/tokens";
+import type { SubTab } from "@/components/subtab-bar";
 
-const tabs = [
+const tabs: SubTab[] = [
   { href: "/admin/items", label: "Items", icon: Icon.Item},
   { href: "/admin/purchases", label: "Purchases", icon: Icon.Purchase },
   { href: "/admin/categories", label: "Categories", icon: Icon.Category },
