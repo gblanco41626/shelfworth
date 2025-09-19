@@ -15,10 +15,12 @@ export interface Item {
 
 export interface CreateItemData {
   name: string
+  stock?: number
   categoryId?: string
 }
 
 export interface UpdateItemData {
   name?: string
+  stock?: number
   categoryId?: string
 }

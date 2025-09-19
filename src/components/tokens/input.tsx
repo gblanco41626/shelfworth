@@ -1,0 +1,58 @@
+import React from "react";
+import type { InputHTMLAttributes, SelectHTMLAttributes, FC, ReactNode } from "react";
+
+type BaseProps = {
+  label: string;
+  error?: string;
+  className?: string;
+};
+
+const baseClassName = 'w-full rounded-xl px-2 focus:border-transparent';
+const errorClassName = 'mt-1 text-xs text-rose-600';
+
+const Field: FC<{ label: string; children: ReactNode }> = ({ label, children }) => (
+  <label className="grid grid-cols-1 sm:grid-cols-3 items-center gap-2 text-sm text-slate-700">
+    <span className="font-medium text-slate-600">{label}</span>
+    <span className="sm:col-span-2">{children}</span>
+  </label>
+);
+
+const InputField: FC<BaseProps & InputHTMLAttributes<HTMLInputElement>> = ({ label, error, className = "", type, ...props }) => (
+  <Field label={label}>
+    <input
+      type={type}
+      {...props}
+      className={`${baseClassName} ${className}`}
+    />
+    {error && <p className={errorClassName}>{error}</p>}
+  </Field>
+);
+
+const Text: FC<BaseProps & InputHTMLAttributes<HTMLInputElement>> = (props) => (
+  <InputField type="text" {...props}/>
+);
+
+const Number: FC<BaseProps & InputHTMLAttributes<HTMLInputElement>> = (props) => (
+  <InputField type="number" {...props}/>
+);
+
+const Date: FC<BaseProps & InputHTMLAttributes<HTMLInputElement>> = (props) => (
+  <InputField type="date" {...props}/>
+);
+
+const Select: FC<BaseProps & SelectHTMLAttributes<HTMLSelectElement>> = ({ label, error, className = "", children, ...props }) => (
+  <Field label={label}>
+    <select
+      {...props}
+      className={`${baseClassName} ${className}`}
+    >
+      {children}
+    </select>
+    {error && <p className={errorClassName}>{error}</p>}
+  </Field>
+);
+
+
+export const Input = {
+  Text, Number, Date, Select
+}
