@@ -1,4 +1,4 @@
-import { db } from '@/lib//db'
+import { db } from '@/lib/db'
 
 // Utility functions for stock management
 export const StockUtils = {

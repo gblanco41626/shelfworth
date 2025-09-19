@@ -1,10 +1,11 @@
 "use client"
 
 import React, { useState, useEffect } from "react";
-import { Button, Card, Table } from "../tokens";
+import { Button, Card, Table} from "@/components/tokens"
 import { Item, Category, CreateItemData } from "@/types";
-import { ItemForm } from "../ItemForm";
-import { Pencil, Box, Trash2 } from "lucide-react";
+import { ItemForm } from "@/components/admin/ItemForm";
+import { Pencil, Trash2 } from "lucide-react";
+import { Icon } from "@/components/tokens";
 
 export default function Items() {
   const [items, setItems] = useState<Item[]>([])
@@ -15,10 +16,6 @@ export default function Items() {
   useEffect(() => {
     fetchItems()
     fetchCategories()
-    // fetchStores()
-    // if (viewMode === 'purchases') {
-    //   fetchPurchases()
-    // }
   }, [])
 
   const fetchItems = async () => {
@@ -101,7 +98,7 @@ export default function Items() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <Card title={editingItem ? "Edit Item" : "New Item"} icon={<Box className="h-5 w-5 text-violet-600" />}> 
+      <Card title={editingItem ? "Edit Item" : "New Item"} icon={<Icon.Item />}> 
         <ItemForm
           categories={categories}
           onSubmit={editingItem ? handleUpdateItem : handleAddItem}
@@ -114,7 +111,7 @@ export default function Items() {
         />
       </Card>
 
-      <Card title="Items" icon={<Box className="h-5 w-5 text-violet-600" />}> 
+      <Card title="Items" icon={<Icon.Item />}> 
         <Table columns={["Name", "Stock", "Category", "Updated", "Actions"]}>
           {items.map((i) => (
             <tr key={i.id} className="hover:bg-slate-50/50">

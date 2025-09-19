@@ -5,6 +5,7 @@ export { Button } from "./button";
 export { Card } from "./card";
 export { Input } from "./input";
 export { Table } from "./table";
+export { Icon } from "./icon";
 
 // This centralizes all UI tokens for Shelfworth so imports stay clean:
 // import { Button, PrimaryButton } from "@/components/tokens";

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import type { Category, CreateItemData } from '@/types'
-import { Input, Button } from './tokens'
+import { Input, Button } from '../tokens'
 
 interface ItemFormProps {
   categories: Category[]

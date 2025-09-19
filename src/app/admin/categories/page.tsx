@@ -1,10 +1,11 @@
 "use client"
 
 import React, { useState, useEffect } from "react";
-import { Button, Card, Table } from "../tokens";
+import { Button, Card, Table } from "@/components/tokens";
 import { Category, CreateCategoryData } from "@/types";
-import { CategoryForm } from "./CategoryForm";
-import { Pencil, Box, Trash2 } from "lucide-react";
+import { CategoryForm } from "@/components/admin/CategoryForm";
+import { Pencil, Trash2 } from "lucide-react";
+import { Icon } from "@/components/tokens";
 
 export default function Categories() {
   const [categories, setCategories] = useState<Category[]>([])
@@ -80,7 +81,7 @@ export default function Categories() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <Card title={editingCategory ? "Edit Category" : "New Category"} icon={<Box className="h-5 w-5 text-violet-600" />}> 
+      <Card title={editingCategory ? "Edit Category" : "New Category"} icon={<Icon.Category />}> 
         <CategoryForm
           onSubmit={editingCategory ? handleUpdateCategory : handleAddCategory}
           onCancel={() => {
@@ -91,7 +92,7 @@ export default function Categories() {
         />
       </Card>
 
-      <Card title="Categories" icon={<Box className="h-5 w-5 text-violet-600" />}> 
+      <Card title="Categories" icon={<Icon.Category />}> 
         <Table columns={["Name", "Actions"]}>
           {categories.map((i) => (
             <tr key={i.id} className="hover:bg-slate-50/50">

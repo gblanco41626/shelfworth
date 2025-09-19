@@ -1,10 +1,11 @@
 "use client"
 
 import React, { useState, useEffect } from "react";
-import { Button, Card, Table } from "../tokens";
+import { Button, Card, Table } from "@/components/tokens";
 import { Store, CreateStoreData } from "@/types";
-import { StoreForm } from "./StoreForm";
-import { Pencil, Box, Trash2 } from "lucide-react";
+import { StoreForm } from "@/components/admin/StoreForm";
+import { Pencil, Trash2 } from "lucide-react";
+import { Icon } from "@/components/tokens";
 
 export default function Stores() {
   const [stores, setStores] = useState<Store[]>([])
@@ -80,7 +81,7 @@ export default function Stores() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <Card title={editingStore ? "Edit Store" : "New Store"} icon={<Box className="h-5 w-5 text-violet-600" />}> 
+      <Card title={editingStore ? "Edit Store" : "New Store"} icon={<Icon.Store />}> 
         <StoreForm
           onSubmit={editingStore ? handleUpdateStore : handleAddStore}
           onCancel={() => {
@@ -91,7 +92,7 @@ export default function Stores() {
         />
       </Card>
 
-      <Card title="Stores" icon={<Box className="h-5 w-5 text-violet-600" />}> 
+      <Card title="Stores" icon={<Icon.Store />}> 
         <Table columns={["Name", "Actions"]}>
           {stores.map((i) => (
             <tr key={i.id} className="hover:bg-slate-50/50">

@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { StockUtils } from '@/app/utils'
+import { StockUtils } from '@/lib'
 import type { CreatePurchaseData } from '@/types'
-import { TEMP_USER_ID } from '@/app/utils'
+import { TEMP_USER_ID } from '@/lib'
 
 // GET /api/purchases - Get all purchases
 export async function GET(request: NextRequest) {

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import type { Item, Category, Store, CreateItemData, Purchase, CreatePurchaseData } from '@/types'
 import { ItemCard } from '@/components/ItemCard'
-import { ItemForm } from '@/components/ItemForm'
+import { ItemForm } from '@/components/admin/ItemForm'
 import { PurchaseForm } from '@/components/PurchaseForm'
 import { PurchaseCard } from '@/components/PurchaseCard'
 import { Plus, Package, DollarSign, Calendar, TrendingUp } from 'lucide-react'
