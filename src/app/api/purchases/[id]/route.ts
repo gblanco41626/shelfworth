@@ -12,7 +12,10 @@ export async function GET(
 
     const purchase = await db.purchase.findUnique({
       where: { id: id },
-      include: { item: { include: { category: true } } }
+      include: {
+        item: { include: { category: true } },
+        store: true
+      }
     })
 
     if (!purchase) {

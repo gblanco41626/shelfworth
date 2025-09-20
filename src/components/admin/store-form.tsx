@@ -1,0 +1,54 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import type { CreateStoreData } from '@/types'
+import { Input, Button } from '../tokens'
+
+interface StoreFormProps {
+  onSubmit: (data: CreateStoreData) => void
+  onCancel?: () => void
+  initialData?: Partial<CreateStoreData>
+  isEditing?: boolean
+}
+
+export function StoreForm({
+  onSubmit,
+  onCancel,
+  initialData,
+  isEditing = false
+}: StoreFormProps) {
+  const [formData, setFormData] = useState<CreateStoreData>({
+    name: '',
+  })
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    onSubmit(formData)
+  }
+
+  useEffect(() => {
+    setFormData({
+      name: initialData?.name || '',
+    })
+  }, [initialData]);
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <Input.Text
+        label="Name"
+        value={formData.name}
+        onChange={(e) => setFormData((f) => ({ ...f, name: e.target.value }))}
+        placeholder="e.g., Walmart"
+        required
+      />
+      <div className="flex items-center justify-end gap-2">
+        {isEditing && (
+          <Button type="button" variant="outline" onClick={() => onCancel?.()}>
+            Cancel
+          </Button>
+        )}
+        <Button type="submit">{isEditing ? "Save Changes" : "Add Store"}</Button>
+      </div>
+    </form>
+  )
+}

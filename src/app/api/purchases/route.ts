@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { StockUtils } from '@/app/utils'
+import { StockUtils } from '@/lib'
 import type { CreatePurchaseData } from '@/types'
-import { TEMP_USER_ID } from '@/app/utils'
+import { TEMP_USER_ID } from '@/lib'
 
 // GET /api/purchases - Get all purchases
 export async function GET(request: NextRequest) {
@@ -11,7 +11,10 @@ export async function GET(request: NextRequest) {
     
     const purchases = await db.purchase.findMany({
       where: { userId },
-      include: { item: { include: { category: true } } },
+      include: {
+        item: { include: { category: true } },
+        store: true
+      },
       orderBy: { dateBought: 'desc' }
     })
 
@@ -35,9 +38,9 @@ export async function POST(request: NextRequest) {
     } = body
 
     // Basic validation
-    if (!itemId || !unit || !amount || !price || !quantity || !storeId) {
+    if (!itemId || !unit || !amount || !price || !quantity) {
       return NextResponse.json(
-        { error: 'ItemId, unit, amount, price, storeId,  and quantity are required' },
+        { error: 'ItemId, unit, amount, price,  and quantity are required' },
         { status: 400 }
       )
     }

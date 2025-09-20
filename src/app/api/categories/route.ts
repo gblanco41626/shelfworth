@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import type { CreateCategoryData } from '@/types'
-import { TEMP_USER_ID } from '@/app/utils'
+import { TEMP_USER_ID } from '@/lib'
 
 // GET /api/categories - Get all categories for user
 export async function GET(request: NextRequest) {
