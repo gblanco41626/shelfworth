@@ -1,7 +1,7 @@
 // src/components/tokens/index.ts
 // Shelfworth UI – Tokens Barrel Export
 
-export { Button } from "./button";
+export { Button, IconButton } from "./button";
 export { Card } from "./card";
 export { Input } from "./input";
 export { Table } from "./table";

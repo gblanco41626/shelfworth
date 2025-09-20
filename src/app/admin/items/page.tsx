@@ -1,11 +1,10 @@
 "use client"
 
 import React, { useState, useEffect } from "react";
-import { Button, Card, Table} from "@/components/tokens"
+import { Card, Table, Icon, IconButton } from "@/components/tokens"
 import { Item, CreateItemData } from "@/types";
 import { ItemForm } from "@/components/admin/item-form";
-import { Pencil, Trash2, Search, Eye } from "lucide-react";
-import { Icon } from "@/components/tokens";
+import { Search } from "lucide-react";
 import { QuickPurchaseForm } from "@/components/admin/quick-purchase-form";
 import { useRouter } from "next/navigation";
 import { formatDateForDisplay } from "@/lib/date-utils";
@@ -14,7 +13,7 @@ import { formatDateForDisplay } from "@/lib/date-utils";
 export default function Items() {
   const [items, setItems] = useState<Item[]>([])
   const [editingItem, setEditingItem] = useState<Item | null>(null)
-  const [itemQuery, setItemQuery] = useState("");
+  const [itemQuery, setItemQuery] = useState<string>("");
   const router = useRouter();
 
   // Fetch data on component mount
@@ -148,21 +147,9 @@ export default function Items() {
                         <p className="mt-0.5 text-xs text-slate-500">{catName}</p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Button variant="outline" onClick={() => router.push(`/admin/items/${i.id}`)} aria-label="View item">
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          onClick={() =>
-                            setEditingItem(i)
-                          }
-                          aria-label="Edit item"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button variant="danger" onClick={() => handleDeleteItem(i.id)} aria-label="Delete item">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <IconButton.View onClick={() => router.push(`/admin/items/${i.id}`)} />
+                        <IconButton.Edit onClick={() => setEditingItem(i) } />
+                        <IconButton.Delete onClick={() => handleDeleteItem(i.id)} />
                       </div>
                     </div>
                     <div className="mt-3 grid grid-cols-3 gap-3 text-xs text-slate-600">
@@ -195,15 +182,9 @@ export default function Items() {
                 <td className="px-4 py-2 text-xs text-slate-500">{formatDateForDisplay(i.updatedAt)}</td>
                 <td className="px-4 py-2">
                   <div className="flex gap-2">
-                    <Button variant="outline" onClick={() => router.push(`/admin/items/${i.id}`)}>
-                      <Eye className="h-4 w-4 text-sky-600" />
-                    </Button>
-                    <Button variant="outline" onClick={() => setEditingItem(i)}>
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button variant="danger" onClick={() => handleDeleteItem(i.id)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <IconButton.View onClick={() => router.push(`/admin/items/${i.id}`)} />
+                    <IconButton.Edit onClick={() => setEditingItem(i)} />
+                    <IconButton.Delete onClick={() => handleDeleteItem(i.id)} />
                   </div>
                 </td>
               </tr>

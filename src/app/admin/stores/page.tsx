@@ -1,11 +1,9 @@
 "use client"
 
 import React, { useState, useEffect } from "react";
-import { Button, Card, Table } from "@/components/tokens";
+import { Card, Table, IconButton, Icon } from "@/components/tokens";
 import { Store, CreateStoreData } from "@/types";
 import { StoreForm } from "@/components/admin/store-form";
-import { Pencil, Trash2 } from "lucide-react";
-import { Icon } from "@/components/tokens";
 
 export default function Stores() {
   const [stores, setStores] = useState<Store[]>([])
@@ -99,12 +97,8 @@ export default function Stores() {
               <td className="px-4 py-2 text-sm text-slate-700">{i.name}</td>
               <td className="px-4 py-2">
                 <div className="flex gap-2">
-                  <Button variant="outline" onClick={() => setEditingStore(i)}>
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button variant="danger" onClick={() => handleDeleteStore(i.id)}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  <IconButton.Edit onClick={() => setEditingStore(i)} />
+                  <IconButton.Delete onClick={() => handleDeleteStore(i.id)} />
                 </div>
               </td>
             </tr>

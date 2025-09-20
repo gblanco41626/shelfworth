@@ -1,11 +1,9 @@
 "use client"
 
 import React, { useState, useEffect } from "react";
-import { Button, Card, Table } from "@/components/tokens";
+import { Card, Table, Icon, IconButton } from "@/components/tokens";
 import { Category, CreateCategoryData } from "@/types";
 import { CategoryForm } from "@/components/admin/category-form";
-import { Pencil, Trash2 } from "lucide-react";
-import { Icon } from "@/components/tokens";
 
 export default function Categories() {
   const [categories, setCategories] = useState<Category[]>([])
@@ -99,12 +97,8 @@ export default function Categories() {
               <td className="px-4 py-2 text-sm text-slate-700">{i.name}</td>
               <td className="px-4 py-2">
                 <div className="flex gap-2">
-                  <Button variant="outline" onClick={() => setEditingCategory(i)}>
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button variant="danger" onClick={() => handleDeleteCategory(i.id)}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  <IconButton.Edit onClick={() => setEditingCategory(i)} />
+                  <IconButton.Delete onClick={() => handleDeleteCategory(i.id)} />
                 </div>
               </td>
             </tr>
