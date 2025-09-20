@@ -1,5 +1,6 @@
 import type { Item } from './item'
 import type { Store } from './store'
+import { Prisma } from '@prisma/client'
 
 export interface Purchase {
   id: string
@@ -43,3 +44,10 @@ export interface UpdatePurchaseData {
   storeName?: string
   price?: number
 }
+
+export type PurchaseWithRelations = Prisma.PurchaseGetPayload<{
+  include: {
+    item: true;
+    store: true;
+  };
+}>;

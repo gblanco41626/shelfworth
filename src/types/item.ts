@@ -1,5 +1,6 @@
 import type { Category } from './category'
 import type { Purchase } from './purchase'
+import { Prisma } from '@prisma/client'
 
 export interface Item {
   id: string
@@ -24,3 +25,10 @@ export interface UpdateItemData {
   stock?: number
   categoryId?: string
 }
+
+export type ItemWithRelations = Prisma.ItemGetPayload<{
+  include: {
+    category: true,
+    purchases: { include: { store: true } },
+  },
+}>;

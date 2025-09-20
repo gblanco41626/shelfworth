@@ -192,7 +192,7 @@ export default function Items() {
                 <td className="px-4 py-2 text-sm text-slate-700">{i.name}</td>
                 <td className="px-4 py-2 text-sm tabular-nums">{i.stock}</td>
                 <td className="px-4 py-2 text-sm text-slate-700">{i.category?.name ?? <span className="text-slate-400">—</span>}</td>
-                <td className="px-4 py-2 text-xs text-slate-500">{new Date(i.updatedAt).toLocaleString()}</td>
+                <td className="px-4 py-2 text-xs text-slate-500">{formatDateForDisplay(i.updatedAt)}</td>
                 <td className="px-4 py-2">
                   <div className="flex gap-2">
                     <Button variant="outline" onClick={() => router.push(`/admin/items/${i.id}`)}>
