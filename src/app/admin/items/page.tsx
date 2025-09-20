@@ -8,6 +8,7 @@ import { Pencil, Trash2, Search, Eye } from "lucide-react";
 import { Icon } from "@/components/tokens";
 import { QuickPurchaseForm } from "@/components/admin/quick-purchase-form";
 import { useRouter } from "next/navigation";
+import { formatDateForDisplay } from "@/lib/date-utils";
 
 
 export default function Items() {
@@ -171,7 +172,7 @@ export default function Items() {
                       </div>
                       <div>
                         <p className="uppercase tracking-wide text-slate-400">Updated</p>
-                        <p className="mt-0.5">{new Date(i.updatedAt).toLocaleString()}</p>
+                        <p className="mt-0.5">{formatDateForDisplay(new Date(i.updatedAt))}</p>
                       </div>
                       <div>
                         <p className="uppercase tracking-wide text-slate-400">Category</p>

@@ -5,14 +5,21 @@ import type { Item, Store, CreatePurchaseData } from '@/types'
 import { Input, Button } from '../tokens'
 import { formatDateForInput } from '@/lib/date-utils'
 
-interface QuickPurchaseFormProps {
-  item: Item, 
-  onSubmit: () => void
+interface PurchaseFormProps {
+  onSubmit: (data: CreatePurchaseData) => void
+  onCancel?: () => void
+  initialData?: Partial<CreatePurchaseData>
+  isEditing?: boolean
 }
 
-export function QuickPurchaseForm({ item, onSubmit }: QuickPurchaseFormProps) {
+export function PurchaseForm({
+  onSubmit,
+  onCancel,
+  initialData,
+  isEditing = false
+}: PurchaseFormProps) {
   const [formData, setFormData] = useState<CreatePurchaseData>({
-    itemId: item.id,
+    itemId: '',
     storeId: '',
     brand: '',
     unit: 'kg',
@@ -21,37 +28,32 @@ export function QuickPurchaseForm({ item, onSubmit }: QuickPurchaseFormProps) {
     quantity: 1,
     price: 0
   })
-
-  const [stores, setStores] = useState<Store[]>([])
+  const [items, setItems] = useState<Item[]>([])
+  const [stores, setCategories] = useState<Store[]>([])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-
-    handleAddPurchase(formData)
+    onSubmit(formData)
   }
-
-  const handleAddPurchase = async (data: CreatePurchaseData) => {
+  
+  const fetchItems = async () => {
     try {
-      const response = await fetch('/api/purchases', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      })
-
+      const response = await fetch('/api/items')
       if (response.ok) {
-        onSubmit()
+        const items = await response.json()
+        setItems(items)
       }
     } catch (error) {
-      console.error('Error adding item:', error)
+      console.error('Error fetching items:', error)
     }
   }
-
+  
   const fetchStores = async () => {
     try {
       const response = await fetch('/api/stores')
       if (response.ok) {
-        const cats = await response.json()
-        setStores(cats)
+        const strs = await response.json()
+        setCategories(strs)
       }
     } catch (error) {
       console.error('Error fetching stores:', error)
@@ -59,12 +61,39 @@ export function QuickPurchaseForm({ item, onSubmit }: QuickPurchaseFormProps) {
   }
 
   useEffect(() => {
-    fetchStores();
+    setFormData({
+      itemId: initialData?.itemId || '',
+      storeId: initialData?.storeId || '',
+      brand: initialData?.brand || '',
+      unit: initialData?.unit || 'kg',
+      amount: initialData?.amount || 1,
+      dateBought: initialData?.dateBought || new Date(),
+      quantity: initialData?.quantity || 1,
+      price: initialData?.price || 0
+    })
+  }, [initialData]);
+
+  useEffect(() => {
+    fetchStores()
+    fetchItems()
   }, []);
 
   return (
-    <div className="p-4 space-y-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <Input.Select
+          label="Item"
+          value={formData.itemId}
+          onChange={(e) => setFormData((f) => ({ ...f, itemId: e.target.value }))}
+          required
+        >
+          <option value="">Select Item</option>
+          {items.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
+        </Input.Select>
         <Input.Text
           label="Brand"
           value={formData.brand ?? ""}
@@ -132,11 +161,15 @@ export function QuickPurchaseForm({ item, onSubmit }: QuickPurchaseFormProps) {
           onChange={(e) => setFormData((f) => ({ ...f, expirationDate: new Date(e.target.value)}))}
           className="w-full rounded-xl border-slate-300 focus:border-sky-400 focus:ring-sky-400"
         />
-      </div>
-      <div className="flex items-center justify-end">
-        <Button onClick={handleSubmit} type="button">Add Purchase</Button>
-      </div>
-      <p className="text-xs text-slate-500">Adding a purchase here will also increase stock by <span className="font-semibold">quantity</span>.</p>
+        <div className="flex items-center justify-end gap-2">
+          {isEditing && (
+            <Button type="button" variant="outline" onClick={() => onCancel?.()}>
+              Cancel
+            </Button>
+          )}
+          <Button type="submit">{isEditing ? "Save Changes" : "Add Purchase"}</Button>
+        </div>
+      </form>
     </div>
   )
 }

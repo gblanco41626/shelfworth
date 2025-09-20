@@ -29,7 +29,7 @@ export interface CreatePurchaseData {
   expirationDate?: Date
   quantity: number
   storeName?: string
-  price: string
+  price: number
 }
 
 export interface UpdatePurchaseData {

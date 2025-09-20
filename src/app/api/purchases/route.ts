@@ -11,7 +11,10 @@ export async function GET(request: NextRequest) {
     
     const purchases = await db.purchase.findMany({
       where: { userId },
-      include: { item: { include: { category: true } } },
+      include: {
+        item: { include: { category: true } },
+        store: true
+      },
       orderBy: { dateBought: 'desc' }
     })
 

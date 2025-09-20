@@ -2,32 +2,12 @@
 
 import { useMemo, useState } from "react";
 import PriceSparkline from "@/components/price-spark-line";
-import { LineChart, Store, Receipt } from "lucide-react";
+import { LineChart } from "lucide-react";
+import { formatDateForDisplay } from "@/lib/date-utils";
+import { formatCurrency } from "@/lib/currency-utils";
+import type { Purchase, Store } from "@/types";
+import { Icon } from "../tokens";
 
-type StoreT = { id: string; name: string };
-type Category = { id: string; name: string };
-type Item = {
-  id: string;
-  name: string;
-  stock: number;
-  category?: Category | null;
-};
-type Purchase = {
-  id: string;
-  itemId: string;
-  brand?: string | null;
-  unit: string;
-  amount: number;
-  dateBought?: string | Date | null;
-  createdAt: string | Date;
-  quantity: number;
-  price: number;
-  storeId?: string | null;
-  store?: StoreT | null;
-};
-
-const fmt = new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP" });
-const fmtDate = (d?: string | Date | null) => (d ? new Date(d).toLocaleString() : "—");
 const pricePerUnit = (p: Purchase) => (p.amount ? p.price / p.amount : p.price);
 
 function latestByStore(purchases: Purchase[]) {
@@ -42,14 +22,12 @@ function latestByStore(purchases: Purchase[]) {
   return Array.from(map.values());
 }
 
-export default function ItemDetailClient({
-  item,
+export default function ItemDetail({
   purchases,
   stores,
 }: {
-  item: Item;
   purchases: Purchase[];
-  stores: StoreT[];
+  stores: Store[];
 }) {
   const [storeFilter, setStoreFilter] = useState<string>("all");
 
@@ -111,16 +89,16 @@ export default function ItemDetailClient({
             {sparkPoints.length > 0 && (
               <>
                 <span>
-                  Min: <b>{fmt.format(Math.min(...filtered.map((p) => p.price)))}</b>
+                  Min: <b>{formatCurrency(Math.min(...filtered.map((p) => p.price)))}</b>
                 </span>
                 <span>
-                  Max: <b>{fmt.format(Math.max(...filtered.map((p) => p.price)))}</b>
+                  Max: <b>{formatCurrency(Math.max(...filtered.map((p) => p.price)))}</b>
                 </span>
                 <span>
                   Last:{" "}
                   <b>
-                    {fmt.format(filtered[filtered.length - 1].price)} (
-                    {fmt.format(pricePerUnit(filtered[filtered.length - 1]))}/
+                    {formatCurrency(filtered[filtered.length - 1].price)} (
+                    {formatCurrency(pricePerUnit(filtered[filtered.length - 1]))}/
                     {filtered[filtered.length - 1].unit})
                   </b>
                 </span>
@@ -133,7 +111,7 @@ export default function ItemDetailClient({
       {/* Latest by Store (respects filter) */}
       <section className="space-y-3">
         <div className="flex items-center gap-2">
-          <Receipt className="h-4 w-4 text-sky-600" />
+          <Icon.Store />
           <h2 className="text-sm font-semibold text-slate-700">Latest by Store</h2>
         </div>
 
@@ -142,12 +120,12 @@ export default function ItemDetailClient({
             <div key={purchase.storeId ?? "none"} className="rounded-2xl bg-white ring-1 ring-slate-200 p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Store className="h-4 w-4 text-emerald-600" />
+                  <Icon.Purchase />
                   <p className="text-sm font-medium text-slate-800">
                     {purchase.store?.name ?? "—"}
                   </p>
                 </div>
-                <p className="text-sm text-slate-500">{fmtDate(purchase.dateBought)}</p>
+                <p className="text-sm text-slate-500">{formatDateForDisplay(purchase.dateBought)}</p>
               </div>
 
               <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
@@ -168,9 +146,9 @@ export default function ItemDetailClient({
                 <div>
                   <p className="text-slate-500">Price</p>
                   <p className="font-semibold text-slate-900">
-                    {fmt.format(purchase.price)}
+                    {formatCurrency(purchase.price)}
                     <span className="ml-1 text-xs text-slate-500">
-                      ({fmt.format(pricePerUnit(purchase))}/{purchase.unit})
+                      ({formatCurrency(pricePerUnit(purchase))}/{purchase.unit})
                     </span>
                   </p>
                 </div>
@@ -209,16 +187,16 @@ export default function ItemDetailClient({
                 })
                 .map((p) => (
                   <tr key={p.id} className="hover:bg-slate-50/60">
-                    <td className="px-4 py-2 text-sm text-slate-700">{fmtDate(p.dateBought ?? p.createdAt)}</td>
+                    <td className="px-4 py-2 text-sm text-slate-700">{formatDateForDisplay(p.dateBought ?? p.createdAt)}</td>
                     <td className="px-4 py-2 text-sm text-slate-700">{p.store?.name ?? "—"}</td>
                     <td className="px-4 py-2 text-sm text-slate-700">{p.brand || "—"}</td>
                     <td className="px-4 py-2 text-sm text-slate-700">
                       {p.amount} {p.unit}
                     </td>
                     <td className="px-4 py-2 text-sm tabular-nums">{p.quantity}</td>
-                    <td className="px-4 py-2 text-sm tabular-nums">{fmt.format(p.price)}</td>
+                    <td className="px-4 py-2 text-sm tabular-nums">{formatCurrency(p.price)}</td>
                     <td className="px-4 py-2 text-sm tabular-nums">
-                      {fmt.format(pricePerUnit(p))}/{p.unit}
+                      {formatCurrency(pricePerUnit(p))}/{p.unit}
                     </td>
                   </tr>
                 ))}
