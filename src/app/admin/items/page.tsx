@@ -1,10 +1,9 @@
 "use client"
 
 import React, { useState, useEffect } from "react";
-import { Card, Table, Icon, IconButton } from "@/components/tokens"
+import { Card, Table, Icon, IconButton, Input } from "@/components/tokens"
 import { Item, CreateItemData } from "@/types";
 import { ItemForm } from "@/components/admin/item-form";
-import { Search } from "lucide-react";
 import { QuickPurchaseForm } from "@/components/admin/quick-purchase-form";
 import { useRouter } from "next/navigation";
 import { formatDateForDisplay } from "@/lib/date-utils";
@@ -120,15 +119,11 @@ export default function Items() {
         title="Items"
         icon={<Icon.Item />}
         actions={
-          <div className="relative w-full sm:w-72">
-            <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-            <input
-              value={itemQuery}
-              onChange={(e) => setItemQuery(e.target.value)}
-              placeholder="Search items"
-              className="w-full rounded-lg border border-slate-300 pl-9 pr-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
-            />
-          </div>
+          <Input.Search
+            value={itemQuery}
+            onChange={(e) => setItemQuery(e.target.value)}
+            placeholder="Search items"
+          />
         }
       > 
               {/* Mobile list */}
