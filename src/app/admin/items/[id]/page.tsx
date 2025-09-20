@@ -1,14 +1,13 @@
 import Link from "next/link";
 import { ArrowLeft, Package2, Tag } from "lucide-react";
-import ItemDetailClient from "@/components/admin/item-detail";
+import ItemDetail from "@/components/admin/item-detail";
 import { ItemUtils } from "@/lib/item-utils";
 
 export default async function ItemDetailPage({ params }: { params: { id: string } }) {
   const { id } = await params
-  const item = await ItemUtils.getItemData(id);
+  const { item, purchases, stores }  = await ItemUtils.getItemData(id);
 
   if (item) {
-    
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-3">
@@ -38,7 +37,7 @@ export default async function ItemDetailPage({ params }: { params: { id: string 
         </div>
 
         {/* Store filter + inline chart + latest + history */}
-        <ItemDetailClient item={item} purchases={item.purchases ?? []} stores={[]} />
+        {purchases.length > 0 && <ItemDetail purchases={purchases} stores={stores ?? []} />}
       </div>
     );
   }

@@ -1,5 +1,5 @@
 // Re-export all types from their individual files
-export type { Item, CreateItemData, UpdateItemData } from './item'
-export type { Category, CreateCategoryData, UpdateCategoryData } from './category'
-export type { Purchase, CreatePurchaseData, UpdatePurchaseData } from './purchase'
-export type { Store, CreateStoreData, UpdateStoreData } from './store'
+export type * from './item'
+export type * from './category'
+export type * from './purchase'
+export type * from './store'

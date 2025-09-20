@@ -5,13 +5,13 @@ import PriceSparkline from "@/components/price-spark-line";
 import { LineChart } from "lucide-react";
 import { formatDateForDisplay } from "@/lib/date-utils";
 import { formatCurrency } from "@/lib/currency-utils";
-import type { Purchase, Store } from "@/types";
+import type { Purchase, PurchaseWithRelations, Store } from "@/types";
 import { Icon } from "../tokens";
 
-const pricePerUnit = (p: Purchase) => (p.amount ? p.price / p.amount : p.price);
+const pricePerUnit = (p: Purchase | PurchaseWithRelations) => (p.amount ? p.price / p.amount : p.price);
 
-function latestByStore(purchases: Purchase[]) {
-  const map = new Map<string, Purchase>();
+function latestByStore(purchases: Purchase[] | PurchaseWithRelations[]) {
+  const map = new Map<string, Purchase | PurchaseWithRelations>();
   for (const p of purchases) {
     const k = p.storeId ?? "__none__";
     const time = new Date(p.dateBought ?? p.createdAt).getTime();
@@ -26,8 +26,8 @@ export default function ItemDetail({
   purchases,
   stores,
 }: {
-  purchases: Purchase[];
-  stores: Store[];
+  purchases: Purchase[] | PurchaseWithRelations[];
+  stores: Store[] | [];
 }) {
   const [storeFilter, setStoreFilter] = useState<string>("all");
 
