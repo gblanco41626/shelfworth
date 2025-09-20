@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, Card, Table } from "@/components/tokens";
 import { Store, CreateStoreData } from "@/types";
-import { StoreForm } from "@/components/admin/StoreForm";
+import { StoreForm } from "@/components/admin/store-form";
 import { Pencil, Trash2 } from "lucide-react";
 import { Icon } from "@/components/tokens";
 

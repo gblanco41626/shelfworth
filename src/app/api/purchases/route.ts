@@ -35,9 +35,9 @@ export async function POST(request: NextRequest) {
     } = body
 
     // Basic validation
-    if (!itemId || !unit || !amount || !price || !quantity || !storeId) {
+    if (!itemId || !unit || !amount || !price || !quantity) {
       return NextResponse.json(
-        { error: 'ItemId, unit, amount, price, storeId,  and quantity are required' },
+        { error: 'ItemId, unit, amount, price,  and quantity are required' },
         { status: 400 }
       )
     }

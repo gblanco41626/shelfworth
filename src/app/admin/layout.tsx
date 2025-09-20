@@ -19,7 +19,7 @@ export default function AdminLayout({
 }>) {
   return (
     <NavShell subTabs={tabs}>
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+      <section className="mx-auto max-w-7xl py-8 space-y-6">
         {children}
       </section>
     </NavShell>
