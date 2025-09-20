@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import type { Item, Category, Store, CreateItemData, Purchase, CreatePurchaseData } from '@/types'
+import type { Item, Store, CreateItemData, Purchase, CreatePurchaseData } from '@/types'
 import { ItemCard } from '@/components/item-card'
 import { ItemForm } from '@/components/admin/item-form'
 import { PurchaseForm } from '@/components/purchase-form'
 import { PurchaseCard } from '@/components/purchase-card'
-import { Plus, Package, DollarSign, Calendar, TrendingUp } from 'lucide-react'
+import { Package, DollarSign, Calendar, TrendingUp } from 'lucide-react'
 import { Button } from '@/components/tokens'
 
 type ViewMode = 'shelf' | 'purchases'
@@ -14,7 +14,6 @@ type FormMode = 'none' | 'item' | 'purchase'
 
 export default function HomePage() {
   const [items, setItems] = useState<Item[]>([])
-  const [categories, setCategories] = useState<Category[]>([])
   const [stores, setStores] = useState<Store[]>([])
   const [purchases, setPurchases] = useState<Purchase[]>([])
   const [viewMode, setViewMode] = useState<ViewMode>('shelf')
@@ -27,7 +26,6 @@ export default function HomePage() {
   // Fetch data on component mount
   useEffect(() => {
     fetchItems()
-    fetchCategories()
     fetchStores()
     if (viewMode === 'purchases') {
       fetchPurchases()
@@ -43,18 +41,6 @@ export default function HomePage() {
       }
     } catch (error) {
       console.error('Error fetching items:', error)
-    }
-  }
-
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch('/api/categories')
-      if (response.ok) {
-        const cats = await response.json()
-        setCategories(cats)
-      }
-    } catch (error) {
-      console.error('Error fetching categories:', error)
     }
   }
 
@@ -315,7 +301,6 @@ export default function HomePage() {
               {editingItem ? 'Edit Item' : 'Add New Item'}
             </h2>
             <ItemForm
-              categories={categories}
               onSubmit={editingItem ? handleUpdateItem : handleAddItem}
               onCancel={() => {
                 setFormMode('none')
