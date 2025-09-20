@@ -1,8 +1,8 @@
 import { db } from '@/lib/db'
-import type { ItemWithRelations, PurchaseWithRelations, Store } from '@/types'
+import type { ItemWithRelations, PurchaseWithRelations, Store, Item } from '@/types'
+import { TEMP_USER_ID } from './constants'
 
 export const ItemUtils = {
-
   getItemData: async (itemId: string): Promise<{
     item: ItemWithRelations | null,
     purchases: PurchaseWithRelations[],
@@ -36,5 +36,35 @@ export const ItemUtils = {
     }
 
     return { item, purchases, stores }
+  },
+
+  // Update item stock after purchase changes
+  updateItemStock: async (itemId: string, stockIncrement: number): Promise<void> => {
+    await db.item.update({
+      where: { id: itemId },
+      data: {
+        stock: { increment: stockIncrement }
+      }
+    })
+  },
+
+  // Get low stock items (stock below threshold)
+  getLowStockItems: async (threshold: number = 1): Promise<object[]> => {
+    return await db.item.findMany({
+      where: {
+        userId: TEMP_USER_ID,
+        stock: { lte: threshold }
+      }
+    })
+  },
+
+  // Get out of stock items
+  getOutOfStockItems: async (): Promise<Item[]> => {
+    return await db.item.findMany({
+      where: {
+        userId: TEMP_USER_ID,
+        stock: 0
+      }
+    })
   }
 }

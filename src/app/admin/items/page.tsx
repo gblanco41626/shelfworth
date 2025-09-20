@@ -6,7 +6,6 @@ import { Item, CreateItemData } from "@/types";
 import { ItemForm } from "@/components/admin/item-form";
 import { QuickPurchaseForm } from "@/components/admin/quick-purchase-form";
 import { useRouter } from "next/navigation";
-import { formatDateForDisplay } from "@/lib/date-utils";
 
 
 export default function Items() {
@@ -152,14 +151,6 @@ export default function Items() {
                         <p className="uppercase tracking-wide text-slate-400">Stock</p>
                         <p className="mt-0.5 tabular-nums text-slate-800">{i.stock}</p>
                       </div>
-                      <div>
-                        <p className="uppercase tracking-wide text-slate-400">Updated</p>
-                        <p className="mt-0.5">{formatDateForDisplay(new Date(i.updatedAt))}</p>
-                      </div>
-                      <div>
-                        <p className="uppercase tracking-wide text-slate-400">Category</p>
-                        <p className="mt-0.5">{catName}</p>
-                      </div>
                     </div>
                   </li>
                 );
@@ -168,13 +159,12 @@ export default function Items() {
           )}
         </div>
         <div className="hidden sm:block">
-          <Table columns={["Name", "Stock", "Category", "Updated", "Actions"]}>
+          <Table columns={["Name", "Stock", "Category", "Actions"]}>
             {filteredItems.map((i) => (
               <tr key={i.id} className="hover:bg-slate-50/50">
                 <td className="px-4 py-2 text-sm text-slate-700">{i.name}</td>
                 <td className="px-4 py-2 text-sm tabular-nums">{i.stock}</td>
                 <td className="px-4 py-2 text-sm text-slate-700">{i.category?.name ?? <span className="text-slate-400">—</span>}</td>
-                <td className="px-4 py-2 text-xs text-slate-500">{formatDateForDisplay(i.updatedAt)}</td>
                 <td className="px-4 py-2">
                   <div className="flex gap-2">
                     <IconButton.View onClick={() => router.push(`/admin/items/${i.id}`)} />

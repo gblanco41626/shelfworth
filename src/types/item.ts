@@ -6,24 +6,33 @@ export interface Item {
   id: string
   name: string
   stock: number
-  categoryId?: string
+  categoryId?: string | null
   userId: string
   createdAt: Date
   updatedAt: Date
   category?: Category
   purchases?: Purchase[]
+  buy: boolean
 }
 
 export interface CreateItemData {
   name: string
   stock?: number
-  categoryId?: string
+  categoryId?: string | null
 }
 
 export interface UpdateItemData {
   name?: string
   stock?: number
-  categoryId?: string
+  categoryId?: string | null
+}
+
+export interface UpdateItemShoppingState {
+  buy: boolean
+}
+
+export interface UpdateItemCartState {
+  storeId?: string | null
 }
 
 export type ItemWithRelations = Prisma.ItemGetPayload<{
