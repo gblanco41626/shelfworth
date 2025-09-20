@@ -1,20 +1,17 @@
 "use client"
 
 import React, { useState, useEffect } from "react";
-import { Button, Card, Table} from "@/components/tokens"
+import { Card, Table, Icon, IconButton, Input } from "@/components/tokens"
 import { Item, CreateItemData } from "@/types";
 import { ItemForm } from "@/components/admin/item-form";
-import { Pencil, Trash2, Search, Eye } from "lucide-react";
-import { Icon } from "@/components/tokens";
 import { QuickPurchaseForm } from "@/components/admin/quick-purchase-form";
 import { useRouter } from "next/navigation";
-import { formatDateForDisplay } from "@/lib/date-utils";
 
 
 export default function Items() {
   const [items, setItems] = useState<Item[]>([])
   const [editingItem, setEditingItem] = useState<Item | null>(null)
-  const [itemQuery, setItemQuery] = useState("");
+  const [itemQuery, setItemQuery] = useState<string>("");
   const router = useRouter();
 
   // Fetch data on component mount
@@ -121,15 +118,11 @@ export default function Items() {
         title="Items"
         icon={<Icon.Item />}
         actions={
-          <div className="relative w-full sm:w-72">
-            <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-            <input
-              value={itemQuery}
-              onChange={(e) => setItemQuery(e.target.value)}
-              placeholder="Search items"
-              className="w-full rounded-lg border border-slate-300 pl-9 pr-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
-            />
-          </div>
+          <Input.Search
+            value={itemQuery}
+            onChange={(e) => setItemQuery(e.target.value)}
+            placeholder="Search items"
+          />
         }
       > 
               {/* Mobile list */}
@@ -148,35 +141,15 @@ export default function Items() {
                         <p className="mt-0.5 text-xs text-slate-500">{catName}</p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Button variant="outline" onClick={() => router.push(`/admin/items/${i.id}`)} aria-label="View item">
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          onClick={() =>
-                            setEditingItem(i)
-                          }
-                          aria-label="Edit item"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button variant="danger" onClick={() => handleDeleteItem(i.id)} aria-label="Delete item">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <IconButton.View onClick={() => router.push(`/admin/items/${i.id}`)} />
+                        <IconButton.Edit onClick={() => setEditingItem(i) } />
+                        <IconButton.Delete onClick={() => handleDeleteItem(i.id)} />
                       </div>
                     </div>
                     <div className="mt-3 grid grid-cols-3 gap-3 text-xs text-slate-600">
                       <div>
                         <p className="uppercase tracking-wide text-slate-400">Stock</p>
                         <p className="mt-0.5 tabular-nums text-slate-800">{i.stock}</p>
-                      </div>
-                      <div>
-                        <p className="uppercase tracking-wide text-slate-400">Updated</p>
-                        <p className="mt-0.5">{formatDateForDisplay(new Date(i.updatedAt))}</p>
-                      </div>
-                      <div>
-                        <p className="uppercase tracking-wide text-slate-400">Category</p>
-                        <p className="mt-0.5">{catName}</p>
                       </div>
                     </div>
                   </li>
@@ -186,24 +159,17 @@ export default function Items() {
           )}
         </div>
         <div className="hidden sm:block">
-          <Table columns={["Name", "Stock", "Category", "Updated", "Actions"]}>
+          <Table columns={["Name", "Stock", "Category", "Actions"]}>
             {filteredItems.map((i) => (
               <tr key={i.id} className="hover:bg-slate-50/50">
                 <td className="px-4 py-2 text-sm text-slate-700">{i.name}</td>
                 <td className="px-4 py-2 text-sm tabular-nums">{i.stock}</td>
                 <td className="px-4 py-2 text-sm text-slate-700">{i.category?.name ?? <span className="text-slate-400">—</span>}</td>
-                <td className="px-4 py-2 text-xs text-slate-500">{formatDateForDisplay(i.updatedAt)}</td>
                 <td className="px-4 py-2">
                   <div className="flex gap-2">
-                    <Button variant="outline" onClick={() => router.push(`/admin/items/${i.id}`)}>
-                      <Eye className="h-4 w-4 text-sky-600" />
-                    </Button>
-                    <Button variant="outline" onClick={() => setEditingItem(i)}>
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button variant="danger" onClick={() => handleDeleteItem(i.id)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <IconButton.View onClick={() => router.push(`/admin/items/${i.id}`)} />
+                    <IconButton.Edit onClick={() => setEditingItem(i)} />
+                    <IconButton.Delete onClick={() => handleDeleteItem(i.id)} />
                   </div>
                 </td>
               </tr>

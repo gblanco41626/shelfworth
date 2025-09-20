@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { StockUtils } from '@/lib'
+import { ItemUtils } from '@/lib'
 import type { CreatePurchaseData } from '@/types'
 import { TEMP_USER_ID } from '@/lib'
 
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    await StockUtils.updateItemStock(itemId, quantity)
+    await ItemUtils.updateItemStock(itemId, quantity)
 
     return NextResponse.json(purchase, { status: 201 })
   } catch (error) {

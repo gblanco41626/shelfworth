@@ -41,12 +41,13 @@ export async function PUT(
     const { id } = await params
 
     const body: UpdateItemData = await request.json()
-    const { name, categoryId } = body
+    const { name, stock, categoryId } = body
 
     const item = await db.item.update({
       where: { id: id },
       data: {
         ...(name && { name }),
+        stock,
         ...(categoryId !== undefined && { categoryId: categoryId || null })
       },
       include: { category: true }

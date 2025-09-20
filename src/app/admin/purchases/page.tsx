@@ -1,19 +1,16 @@
 "use client"
 
 import React, { useState, useEffect } from "react";
-import { Button, Card, Table} from "@/components/tokens"
+import { Card, Table, Icon, IconButton, Input } from "@/components/tokens"
 import { Purchase, CreatePurchaseData } from "@/types";
 import { PurchaseForm } from "@/components/admin/purchase-form";
-import { Pencil, Trash2, Search } from "lucide-react";
-import { Icon } from "@/components/tokens";
 import { formatDateForDisplay } from "@/lib/date-utils";
 import { formatCurrency } from "@/lib/currency-utils";
-
 
 export default function Purchases() {
   const [purchases, setPurchases] = useState<Purchase[]>([])
   const [editingPurchase, setEditingPurchase] = useState<Purchase | null>(null)
-  const [purchaseQuery, setPurchaseQuery] = useState("");
+  const [purchaseQuery, setPurchaseQuery] = useState<string>("");
 
   // Fetch data on component mount
   useEffect(() => {
@@ -111,15 +108,11 @@ export default function Purchases() {
         title="Purchases"
         icon={<Icon.Purchase />}
         actions={
-          <div className="relative w-full sm:w-72">
-            <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-            <input
-              value={purchaseQuery}
-              onChange={(e) => setPurchaseQuery(e.target.value)}
-              placeholder="Search purchases"
-              className="w-full rounded-lg border border-slate-300 pl-9 pr-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
-            />
-          </div>
+          <Input.Search
+            value={purchaseQuery}
+            onChange={(e) => setPurchaseQuery(e.target.value)}
+            placeholder="Search purchases"
+          />
         }
       > 
               {/* Mobile list */}
@@ -137,18 +130,8 @@ export default function Purchases() {
                         <p className="mt-0.5 text-xs text-slate-500">{i.store?.name}</p>
                       </div>
                       <div className="flex purchases-center gap-2">
-                        <Button
-                          variant="outline"
-                          onClick={() =>
-                            setEditingPurchase(i)
-                          }
-                          aria-label="Edit purchase"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button variant="danger" onClick={() => handleDeletePurchase(i.id)} aria-label="Delete purchase">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <IconButton.Edit onClick={() => setEditingPurchase(i) } />
+                        <IconButton.Delete onClick={() => handleDeletePurchase(i.id)} />
                       </div>
                     </div>
                     <div className="mt-3 grid grid-cols-3 gap-3 text-xs text-slate-600">
@@ -182,12 +165,8 @@ export default function Purchases() {
                 <td className="px-4 py-2 text-sm tabular-nums">{formatCurrency(i.quantity * i.price)}</td>
                 <td className="px-4 py-2">
                   <div className="flex gap-2">
-                    <Button variant="outline" onClick={() => setEditingPurchase(i)}>
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button variant="danger" onClick={() => handleDeletePurchase(i.id)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <IconButton.Edit onClick={() => setEditingPurchase(i)} />
+                    <IconButton.Delete onClick={() => handleDeletePurchase(i.id)} />
                   </div>
                 </td>
               </tr>

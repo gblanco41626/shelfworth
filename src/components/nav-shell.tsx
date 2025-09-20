@@ -57,7 +57,7 @@ export default function NavShell({
   /** optional sub-tabs; pass [] if none */
   subTabs?: SubTab[];
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<boolean>(false);
   const headerRef = useRef<HTMLDivElement>(null);
 
   // measure the visible header and store height in a CSS var
