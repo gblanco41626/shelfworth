@@ -65,7 +65,7 @@ export function ItemForm({
         />
         <Input.Number label="Stock"
           value={formData.stock}
-          onChange={(e) => setFormData((f) => ({ ...f, stock: Number(e.target.value) }))}
+          onChange={(e) => setFormData((f) => ({ ...f, stock: parseFloat(e.target.value) }))}
           required
         />
         <Input.Select label="Category"

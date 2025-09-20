@@ -71,16 +71,16 @@ export function QuickPurchaseForm({ item, onSubmit }: QuickPurchaseFormProps) {
           onChange={(e) => setFormData((f) => ({ ...f, brand: e.target.value}))}
           placeholder="e.g., Organic Valley"
         />
-        <Input.Text
+        <Input.Number
           label="Quantity"
           value={formData.quantity}
-          onChange={(e) => setFormData((f) => ({ ...f, quantity: Number(e.target.value) }))}
+          onChange={(e) => setFormData((f) => ({ ...f, quantity: parseFloat(e.target.value) }))}
           required
         />
-        <Input.Text
+        <Input.Number
           label="Amount"
           value={formData.amount}
-          onChange={(e) => setFormData((f) => ({ ...f, amount: Number(e.target.value) }))}
+          onChange={(e) => setFormData((f) => ({ ...f, amount: parseFloat(e.target.value) }))}
           required
         />
         <Input.Select
@@ -102,10 +102,10 @@ export function QuickPurchaseForm({ item, onSubmit }: QuickPurchaseFormProps) {
             <option value="bottle">bottle</option>
             <option value="piece">piece</option>
         </Input.Select>
-        <Input.Text
+        <Input.Number
           label="Price"
           value={formData.price ?? ""}
-          onChange={(e) => setFormData((f) => ({ ...f, price: Number(e.target.value) }))}
+          onChange={(e) => setFormData((f) => ({ ...f, price: parseFloat(e.target.value) }))}
           required
         />
         <Input.Select
