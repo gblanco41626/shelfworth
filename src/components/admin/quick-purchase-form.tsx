@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import type { Item, Store, CreatePurchaseData } from '@/types'
 import { Input, Button } from '../tokens'
 import { formatDateForInput } from '@/lib/date-utils'
+import { formatCurrency, pricePerUnit } from '@/lib/currency-utils'
 
 interface QuickPurchaseFormProps {
   item: Item, 
@@ -108,6 +109,18 @@ export function QuickPurchaseForm({ item, onSubmit }: QuickPurchaseFormProps) {
           onChange={(e) => setFormData((f) => ({ ...f, price: parseFloat(e.target.value) }))}
           required
         />
+        <div className="sm:hidden mt-3 grid grid-cols-3 gap-3 text-xs text-slate-600">
+          <p className="uppercase tracking-wide text-slate-400">Total Price</p>
+          <p className="mt-0.5 tabular-nums text-slate-800">{formatCurrency(formData.price * formData.quantity)}</p>
+        </div>
+        <div className="mt-3 grid grid-cols-3 gap-3 text-xs text-slate-600">
+          <p className="uppercase tracking-wide text-slate-400">Price/Unit</p>
+          <p className="mt-0.5 tabular-nums text-slate-800">{`${formatCurrency(pricePerUnit(formData))}/${formData.unit}`}</p>
+        </div>
+        <div className="hidden sm:block mt-3 grid grid-cols-3 gap-3 text-xs text-slate-600">
+          <p className="uppercase tracking-wide text-slate-400">Total Price</p>
+          <p className="mt-0.5 tabular-nums text-slate-800">{formatCurrency(formData.price * formData.quantity)}</p>
+        </div>
         <Input.Select
           label="Store"
           value={formData.storeId ?? ""}

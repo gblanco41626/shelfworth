@@ -5,7 +5,7 @@ import { Card, Table, Icon, IconButton, Input } from "@/components/tokens"
 import { Purchase, CreatePurchaseData } from "@/types";
 import { PurchaseForm } from "@/components/admin/purchase-form";
 import { formatDateForDisplay } from "@/lib/date-utils";
-import { formatCurrency } from "@/lib/currency-utils";
+import { formatCurrency, pricePerUnit } from "@/lib/currency-utils";
 
 export default function Purchases() {
   const [purchases, setPurchases] = useState<Purchase[]>([])
@@ -134,18 +134,22 @@ export default function Purchases() {
                         <IconButton.Delete onClick={() => handleDeletePurchase(i.id)} />
                       </div>
                     </div>
-                    <div className="mt-3 grid grid-cols-3 gap-3 text-xs text-slate-600">
+                    <div className="mt-3 grid grid-cols-2 gap-3 text-xs text-slate-600">
                       <div>
                         <p className="uppercase tracking-wide text-slate-400">Date</p>
                         <p className="mt-0.5 tabular-nums text-slate-800">{formatDateForDisplay(i.dateBought)}</p>
                       </div>
                       <div>
-                        <p className="uppercase tracking-wide text-slate-400">Qty</p>
-                        <p className="mt-0.5">{`${i.quantity * i.amount} ${i.unit}`}</p>
+                        <p className="uppercase tracking-wide text-slate-400">Unit</p>
+                        <p className="mt-0.5">{`${i.amount} ${i.unit}`}</p>
                       </div>
                       <div>
                         <p className="uppercase tracking-wide text-slate-400">Price</p>
                         <p className="mt-0.5">{formatCurrency(i.price)}</p>
+                      </div>
+                      <div>
+                        <p className="uppercase tracking-wide text-slate-400">$/Unit</p>
+                        <p className="mt-0.5">{`${formatCurrency(pricePerUnit(i),)}`}</p>
                       </div>
                     </div>
                   </li>
@@ -155,14 +159,17 @@ export default function Purchases() {
           )}
         </div>
         <div className="hidden sm:block">
-          <Table columns={["Item", "Store", "Date", "Qty", "Price", "Actions"]}>
+          <Table columns={["Item", "Store", "Date", "Price", "$/Unit", "Actions"]}>
             {filteredPurchases.map((i) => (
               <tr key={i.id} className="hover:bg-slate-50/50">
                 <td className="px-4 py-2 text-sm text-slate-700">{i.item?.name}</td>
-                <td className="px-4 py-2 text-sm text-slate-700">{i.store?.name}</td>
+                <td className="px-4 py-2 text-xs text-slate-700">{i.store?.name}</td>
                 <td className="px-4 py-2 text-xs text-slate-500">{formatDateForDisplay(i.dateBought)}</td>
-                <td className="px-4 py-2 text-sm tabular-nums">{`${i.quantity * i.amount} ${i.unit}`}</td>
                 <td className="px-4 py-2 text-sm tabular-nums">{formatCurrency(i.price)}</td>
+                <td className="px-4 py-2 text-sm tabular-nums">
+                  <p>{formatCurrency(pricePerUnit(i),)}</p>
+                  <p className="text-xs">/{i.unit}</p>
+                </td>
                 <td className="px-4 py-2">
                   <div className="flex gap-2">
                     <IconButton.Edit onClick={() => setEditingPurchase(i)} />
