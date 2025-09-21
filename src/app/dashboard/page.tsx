@@ -41,6 +41,7 @@ export default function HomePage() {
       console.error('Error updating item:', error)
     }
   }
+  
   const addToStoreCart = async (id: string, storeId: string) => {
     try {
       const response = await fetch(`/api/items/${id}/cart`, {
@@ -114,7 +115,7 @@ export default function HomePage() {
           <ul className="space-y-3">
             {outOfStock.map((i) => (
               <li key={i.id} className="flex items-center justify-between gap-3 rounded-xl ring-1 ring-slate-200 p-3">
-                <p className="font-medium text-slate-800">{i.name}</p>
+                <p className="font-medium text-sm text-slate-800">{i.name}</p>
                 <IconButton.Shop onClick={() => addToShoppingList(i.id)} />
               </li>
             ))}
@@ -134,7 +135,7 @@ export default function HomePage() {
             {shoppingList.map((item) => {
               return (
                 <li key={item.id} className="flex items-center justify-between gap-3 rounded-xl ring-1 ring-slate-200 p-3">
-                  <p className="font-medium text-slate-800">{item.name}</p>
+                  <p className="font-medium text-sm text-slate-800">{item.name}</p>
                   <div className="flex gap-2 items-center">
                     <select
                       className="rounded-lg border-slate-300 text-sm"

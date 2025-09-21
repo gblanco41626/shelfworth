@@ -8,6 +8,7 @@ export interface Item {
   stock: number
   categoryId?: string | null
   userId: string
+  storeId?: string | null
   createdAt: Date
   updatedAt: Date
   category?: Category

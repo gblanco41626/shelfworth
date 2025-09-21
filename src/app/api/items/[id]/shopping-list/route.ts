@@ -13,7 +13,7 @@ export async function PATCH(
     const { buy } = body
 
     const item = await db.item.update({
-      where: { id: id },
+      where: { id },
       data: {
         buy
       }

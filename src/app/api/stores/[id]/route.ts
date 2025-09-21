@@ -11,7 +11,7 @@ export async function GET(
     const { id } = await params
 
     const store = await db.store.findUnique({
-      where: { id: id }
+      where: { id }
     })
 
     if (!store) {
@@ -43,7 +43,7 @@ export async function PUT(
     const { name } = body
 
     const store = await db.store.update({
-      where: { id: id },
+      where: { id },
       data: {
         ...(name && { name }),
       }
@@ -68,7 +68,7 @@ export async function DELETE(
     const { id } = await params
 
     await db.store.delete({
-      where: { id: id }
+      where: { id }
     })
 
     return NextResponse.json({ message: 'store deleted successfully' })
