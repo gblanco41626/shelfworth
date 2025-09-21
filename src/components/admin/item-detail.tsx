@@ -175,7 +175,7 @@ export default function ItemDetail({
                 <th className="px-4 py-2 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Amount</th>
                 <th className="px-4 py-2 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Qty</th>
                 <th className="px-4 py-2 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Price</th>
-                <th className="px-4 py-2 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">/Unit</th>
+                <th className="px-4 py-2 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">$/Unit</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">

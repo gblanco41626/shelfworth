@@ -145,7 +145,7 @@ export default function Purchases() {
                       </div>
                       <div>
                         <p className="uppercase tracking-wide text-slate-400">Price</p>
-                        <p className="mt-0.5">{formatCurrency(i.quantity * i.price)}</p>
+                        <p className="mt-0.5">{formatCurrency(i.price)}</p>
                       </div>
                     </div>
                   </li>
