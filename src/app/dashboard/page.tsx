@@ -25,6 +25,7 @@ export default function HomePage() {
       console.error('Error updating item:', error)
     }
   }
+  
   const removeFromShoppingList = async (id: string) => {
     try {
       const response = await fetch(`/api/items/${id}/shopping-list`, {
@@ -41,7 +42,7 @@ export default function HomePage() {
       console.error('Error updating item:', error)
     }
   }
-  
+
   const addToStoreCart = async (id: string, storeId: string) => {
     try {
       const response = await fetch(`/api/items/${id}/cart`, {
@@ -105,25 +106,6 @@ export default function HomePage() {
   return (
     <section className="grid grid-cols-1 xl:grid-cols-3 gap-6">
       <Card
-        title="Out of Stock"
-        icon={<Icon.OutOfStock />}
-        actions={<span className="text-xs text-slate-500">{outOfStock.length} items</span>}
-      >
-        {outOfStock.length === 0 ? (
-          <div className="text-sm text-slate-500">All good! No out-of-stock items.</div>
-        ) : (
-          <ul className="space-y-3">
-            {outOfStock.map((i) => (
-              <li key={i.id} className="flex items-center justify-between gap-3 rounded-xl ring-1 ring-slate-200 p-3">
-                <p className="font-medium text-sm text-slate-800">{i.name}</p>
-                <IconButton.Shop onClick={() => addToShoppingList(i.id)} />
-              </li>
-            ))}
-          </ul>
-        )}
-      </Card>
-
-      <Card
         title="Shopping List"
         icon={<Icon.Cart />}
         actions={<span className="text-xs text-slate-500">{shoppingList.length} items</span>}
@@ -152,6 +134,25 @@ export default function HomePage() {
                 </li>
               );
             })}
+          </ul>
+        )}
+      </Card>
+      
+      <Card
+        title="Out of Stock"
+        icon={<Icon.OutOfStock />}
+        actions={<span className="text-xs text-slate-500">{outOfStock.length} items</span>}
+      >
+        {outOfStock.length === 0 ? (
+          <div className="text-sm text-slate-500">All good! No out-of-stock items.</div>
+        ) : (
+          <ul className="space-y-3">
+            {outOfStock.map((i) => (
+              <li key={i.id} className="flex items-center justify-between gap-3 rounded-xl ring-1 ring-slate-200 p-3">
+                <p className="font-medium text-sm text-slate-800">{i.name}</p>
+                <IconButton.Shop onClick={() => addToShoppingList(i.id)} />
+              </li>
+            ))}
           </ul>
         )}
       </Card>
