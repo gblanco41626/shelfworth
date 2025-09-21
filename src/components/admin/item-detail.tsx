@@ -8,7 +8,7 @@ import { formatCurrency } from "@/lib/currency-utils";
 import type { Purchase, PurchaseWithRelations, Store } from "@/types";
 import { Icon } from "../tokens";
 
-const pricePerUnit = (p: Purchase | PurchaseWithRelations) => (p.amount ? p.price / p.amount : p.price);
+const pricePerUnit = (p: Purchase | PurchaseWithRelations) => (p.amount ? p.price / (p.amount * p.quantity) : p.price);
 
 function latestByStore(purchases: Purchase[] | PurchaseWithRelations[]) {
   const map = new Map<string, Purchase | PurchaseWithRelations>();
