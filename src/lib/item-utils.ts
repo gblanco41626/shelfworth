@@ -12,7 +12,10 @@ export const ItemUtils = {
       where: { id: itemId },
       include: {
         category: true,
-        purchases: { include: { store: true }, orderBy: { dateBought: "desc" } },
+        purchases: {
+          include: { store: true },
+          orderBy: { dateBought: { sort: 'desc', nulls: 'last' } }
+        },
       },
     });
 

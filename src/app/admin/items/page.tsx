@@ -173,7 +173,7 @@ export default function Items() {
                       </div>
                       <div className="flex items-center grid grid-cols-2 gap-2">
                         <IconButton.View onClick={() => router.push(`/admin/items/${i.id}`)} />
-                        <IconButton.Shop onClick={() => addToShoppingList(i.id)} />
+                        {!i.buy && <IconButton.Shop onClick={() => addToShoppingList(i.id)} />}
                         <IconButton.Edit onClick={() => setEditingItem(i) } />
                         <IconButton.Delete onClick={() => handleDeleteItem(i.id)} />
                       </div>
@@ -209,7 +209,7 @@ export default function Items() {
                   <div className="flex gap-2">
                     <IconButton.View onClick={() => router.push(`/admin/items/${i.id}`)} />
                     <IconButton.Edit onClick={() => setEditingItem(i)} />
-                    <IconButton.Shop onClick={() => addToShoppingList(i.id)} />
+                    {!i.buy && <IconButton.Shop onClick={() => addToShoppingList(i.id)} />}
                     <IconButton.Delete onClick={() => handleDeleteItem(i.id)} />
                   </div>
                 </td>

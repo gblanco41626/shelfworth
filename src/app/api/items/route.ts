@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
       include: { 
         category: true,
         purchases: {
-          orderBy: { dateBought: 'desc' }
+          orderBy: { dateBought: { sort: 'desc', nulls: 'last' } }
         }
       },
       orderBy: { createdAt: 'desc' }

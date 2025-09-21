@@ -4,11 +4,9 @@ import { useMemo, useState } from "react";
 import PriceSparkline from "@/components/price-spark-line";
 import { LineChart } from "lucide-react";
 import { formatDateForDisplay } from "@/lib/date-utils";
-import { formatCurrency } from "@/lib/currency-utils";
+import { formatCurrency, pricePerUnit } from "@/lib/currency-utils";
 import type { Purchase, PurchaseWithRelations, Store } from "@/types";
 import { Icon } from "../tokens";
-
-const pricePerUnit = (p: Purchase | PurchaseWithRelations) => (p.amount ? p.price / (p.amount * p.quantity) : p.price);
 
 function latestByStore(purchases: Purchase[] | PurchaseWithRelations[]) {
   const map = new Map<string, Purchase | PurchaseWithRelations>();
