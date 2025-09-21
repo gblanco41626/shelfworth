@@ -78,7 +78,7 @@ export function QuickPurchaseForm({ item, onSubmit }: QuickPurchaseFormProps) {
           required
         />
         <Input.Number
-          label="Amount"
+          label="Qty/Unit"
           value={formData.amount}
           onChange={(e) => setFormData((f) => ({ ...f, amount: parseFloat(e.target.value) }))}
           required

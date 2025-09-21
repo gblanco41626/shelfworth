@@ -134,7 +134,7 @@ export default function ItemDetail({
                   <p className="font-medium text-slate-800">{purchase.brand || "—"}</p>
                 </div>
                 <div>
-                  <p className="text-slate-500">Amount</p>
+                  <p className="text-slate-500">Unit</p>
                   <p className="font-medium text-slate-800">
                     {purchase.amount} {purchase.unit}
                   </p>
@@ -172,10 +172,10 @@ export default function ItemDetail({
                 <th className="px-4 py-2 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Date</th>
                 <th className="px-4 py-2 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Store</th>
                 <th className="px-4 py-2 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Brand</th>
-                <th className="px-4 py-2 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Amount</th>
+                <th className="px-4 py-2 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Unit</th>
                 <th className="px-4 py-2 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Qty</th>
                 <th className="px-4 py-2 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Price</th>
-                <th className="px-4 py-2 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">/Unit</th>
+                <th className="px-4 py-2 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">$/Unit</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">

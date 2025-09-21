@@ -145,7 +145,7 @@ export default function Purchases() {
                       </div>
                       <div>
                         <p className="uppercase tracking-wide text-slate-400">Price</p>
-                        <p className="mt-0.5">{formatCurrency(i.quantity * i.price)}</p>
+                        <p className="mt-0.5">{formatCurrency(i.price)}</p>
                       </div>
                     </div>
                   </li>
@@ -162,7 +162,7 @@ export default function Purchases() {
                 <td className="px-4 py-2 text-sm text-slate-700">{i.store?.name}</td>
                 <td className="px-4 py-2 text-xs text-slate-500">{formatDateForDisplay(i.dateBought)}</td>
                 <td className="px-4 py-2 text-sm tabular-nums">{`${i.quantity * i.amount} ${i.unit}`}</td>
-                <td className="px-4 py-2 text-sm tabular-nums">{formatCurrency(i.quantity * i.price)}</td>
+                <td className="px-4 py-2 text-sm tabular-nums">{formatCurrency(i.price)}</td>
                 <td className="px-4 py-2">
                   <div className="flex gap-2">
                     <IconButton.Edit onClick={() => setEditingPurchase(i)} />
