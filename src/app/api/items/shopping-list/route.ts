@@ -12,7 +12,23 @@ export async function GET(request: NextRequest) {
         userId: userId,
         buy: true,
         storeId: null
-      }
+      },
+      include: {
+        category: true,
+        purchases: {
+          include: { store: true }
+        }
+      },
+      orderBy: [
+        {
+          category: {
+            name: 'asc'
+          }
+        },
+        {
+          name: 'asc'
+        }
+      ]
     })
 
     return NextResponse.json(items)

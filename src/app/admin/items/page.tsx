@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Card, Table, Icon, IconButton, Input } from "@/components/tokens"
 import { Item, CreateItemData } from "@/types";
 import { ItemForm } from "@/components/admin/item-form";
@@ -116,13 +116,15 @@ export default function Items() {
       console.error('Error updating item:', error)
     }
   }
-
-  const filteredItems = items.filter((i) => {
-    const q = itemQuery.trim().toLowerCase();
-    if (!q) return true;
-    const name = i.name.toLowerCase();
-    return name.includes(q);
-  });
+  
+  const filtered = useMemo(() => (
+      items.filter((i) => {
+        const q = itemQuery.trim().toLowerCase();
+        if (!q) return true;
+        const name = i.name.toLowerCase();
+        return name.includes(q);
+      })
+  ), [items, itemQuery]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -158,11 +160,11 @@ export default function Items() {
       > 
               {/* Mobile list */}
         <div className="sm:hidden">
-          {filteredItems.length === 0 ? (
+          {filtered.length === 0 ? (
             <div className="px-4 py-6 text-sm text-slate-500">No matching items.</div>
           ) : (
             <ul className="space-y-3">
-              {filteredItems.map((i) => {
+              {filtered.map((i) => {
                 const catName = i.category?.name || 'Uncategorized'
                 return (
                   <li key={i.id} className="rounded-xl ring-1 ring-slate-200 p-3">
@@ -195,7 +197,7 @@ export default function Items() {
         </div>
         <div className="hidden sm:block">
           <Table columns={["Name", "Stock", "Category", "Actions"]}>
-            {filteredItems.map((i) => (
+            {filtered.map((i) => (
               <tr key={i.id} className="hover:bg-slate-50/50">
                 <td className="px-4 py-2 text-sm text-slate-700">{i.name}</td>
                 <td className="px-4 py-2 text-sm tabular-nums">

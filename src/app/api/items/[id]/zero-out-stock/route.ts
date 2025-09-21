@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { UpdateItemShoppingState } from '@/types';
 
 export async function PATCH(
   request: NextRequest,

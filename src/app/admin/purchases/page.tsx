@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Card, Table, Icon, IconButton, Input } from "@/components/tokens"
 import { Purchase, CreatePurchaseData } from "@/types";
 import { PurchaseForm } from "@/components/admin/purchase-form";
@@ -84,12 +84,14 @@ export default function Purchases() {
     }
   }
 
-  const filteredPurchases = purchases.filter((i) => {
-    const q = purchaseQuery.trim().toLowerCase();
-    if (!q) return true;
-    const name = i.item?.name.toLowerCase();
-    return name?.includes(q);
-  });
+  const filtered = useMemo(() => (
+    purchases.filter((i) => {
+      const q = purchaseQuery.trim().toLowerCase();
+      if (!q) return true;
+      const name = i.item?.name.toLowerCase();
+      return name?.includes(q);
+    })
+  ), [purchases, purchaseQuery]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -117,11 +119,11 @@ export default function Purchases() {
       > 
         {/* Mobile list */}
         <div className="sm:hidden">
-          {filteredPurchases.length === 0 ? (
+          {filtered.length === 0 ? (
             <div className="px-4 py-6 text-sm text-slate-500">No matching purchases.</div>
           ) : (
             <ul className="space-y-3">
-              {filteredPurchases.map((i) => {
+              {filtered.map((i) => {
                 return (
                   <li key={i.id} className="rounded-xl ring-1 ring-slate-200 p-3">
                     <div className="flex purchases-start justify-between gap-3">
@@ -160,7 +162,7 @@ export default function Purchases() {
         </div>
         <div className="hidden sm:block">
           <Table columns={["Item", "Store", "Date", "Price", "$/Unit", "Actions"]}>
-            {filteredPurchases.map((i) => (
+            {filtered.map((i) => (
               <tr key={i.id} className="hover:bg-slate-50/50">
                 <td className="px-4 py-2 text-sm text-slate-700">{i.item?.name}</td>
                 <td className="px-4 py-2 text-xs text-slate-700">{i.store?.name}</td>
