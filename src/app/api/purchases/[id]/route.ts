@@ -11,7 +11,7 @@ export async function GET(
     const { id } = await params
 
     const purchase = await db.purchase.findUnique({
-      where: { id: id },
+      where: { id },
       include: {
         item: { include: { category: true } },
         store: true
@@ -50,7 +50,7 @@ export async function PUT(
     } = body
 
     const purchase = await db.purchase.update({
-      where: { id: id },
+      where: { id },
       data: {
         ...(brand !== undefined && { brand }),
         ...(unit && { unit }),
@@ -89,7 +89,7 @@ export async function DELETE(
     const { id } = await params
 
     await db.purchase.delete({
-      where: { id: id }
+      where: { id }
     })
 
     return NextResponse.json({ message: 'Grocery item deleted successfully' })

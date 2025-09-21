@@ -43,7 +43,8 @@ export const ItemUtils = {
     await db.item.update({
       where: { id: itemId },
       data: {
-        stock: { increment: stockIncrement }
+        stock: { increment: stockIncrement },
+        storeId: null
       }
     })
   },

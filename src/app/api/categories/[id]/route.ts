@@ -11,7 +11,7 @@ export async function GET(
     const { id } = await params
 
     const category = await db.category.findUnique({
-      where: { id: id }
+      where: { id }
     })
 
     if (!category) {
@@ -43,7 +43,7 @@ export async function PUT(
     const { name } = body
 
     const category = await db.category.update({
-      where: { id: id },
+      where: { id },
       data: {
         ...(name && { name }),
       }
@@ -68,7 +68,7 @@ export async function DELETE(
     const { id } = await params
 
     await db.category.delete({
-      where: { id: id }
+      where: { id }
     })
 
     return NextResponse.json({ message: 'category deleted successfully' })

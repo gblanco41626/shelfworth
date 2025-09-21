@@ -86,6 +86,37 @@ export default function Items() {
     }
   }
 
+  const handleZeroOutStock = async (id: string) => {
+    try {
+      const response = await fetch(`/api/items/${id}/zero-out-stock`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' }
+      })
+
+      if (response.ok) {
+        fetchItems()
+      }
+    } catch (error) {
+      console.error('Error updating item:', error)
+    }
+  }
+
+  const addToShoppingList = async (id: string) => {
+    try {
+      const response = await fetch(`/api/items/${id}/shopping-list`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ buy: true })
+      })
+
+      if (response.ok) {
+        fetchItems()
+      }
+    } catch (error) {
+      console.error('Error updating item:', error)
+    }
+  }
+
   const filteredItems = items.filter((i) => {
     const q = itemQuery.trim().toLowerCase();
     if (!q) return true;
@@ -137,19 +168,23 @@ export default function Items() {
                   <li key={i.id} className="rounded-xl ring-1 ring-slate-200 p-3">
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="font-medium text-slate-800">{i.name}</p>
+                        <p className="font-medium text-sm text-slate-800">{i.name}</p>
                         <p className="mt-0.5 text-xs text-slate-500">{catName}</p>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center grid grid-cols-2 gap-2">
                         <IconButton.View onClick={() => router.push(`/admin/items/${i.id}`)} />
+                        <IconButton.Shop onClick={() => addToShoppingList(i.id)} />
                         <IconButton.Edit onClick={() => setEditingItem(i) } />
                         <IconButton.Delete onClick={() => handleDeleteItem(i.id)} />
                       </div>
                     </div>
-                    <div className="mt-3 grid grid-cols-3 gap-3 text-xs text-slate-600">
+                    <div className="mt-3 text-xs text-slate-600">
                       <div>
                         <p className="uppercase tracking-wide text-slate-400">Stock</p>
-                        <p className="mt-0.5 tabular-nums text-slate-800">{i.stock}</p>
+                        <p className="mt-0.5 tabular-nums text-slate-800">
+                          <span className="mr-2">{i.stock}</span>
+                          {i.stock > 0 && <IconButton.Cancel size="btn-sm" onClick={() => handleZeroOutStock(i.id)}/>}
+                        </p>
                       </div>
                     </div>
                   </li>
@@ -163,12 +198,18 @@ export default function Items() {
             {filteredItems.map((i) => (
               <tr key={i.id} className="hover:bg-slate-50/50">
                 <td className="px-4 py-2 text-sm text-slate-700">{i.name}</td>
-                <td className="px-4 py-2 text-sm tabular-nums">{i.stock}</td>
+                <td className="px-4 py-2 text-sm tabular-nums">
+                  <div className="flex flex-row">
+                    <span className="mr-2">{i.stock}</span>
+                    {i.stock > 0 && <IconButton.Cancel size="btn-sm" onClick={() => handleZeroOutStock(i.id)}/>}
+                  </div>
+                </td>
                 <td className="px-4 py-2 text-sm text-slate-700">{i.category?.name ?? <span className="text-slate-400">—</span>}</td>
                 <td className="px-4 py-2">
                   <div className="flex gap-2">
                     <IconButton.View onClick={() => router.push(`/admin/items/${i.id}`)} />
                     <IconButton.Edit onClick={() => setEditingItem(i)} />
+                    <IconButton.Shop onClick={() => addToShoppingList(i.id)} />
                     <IconButton.Delete onClick={() => handleDeleteItem(i.id)} />
                   </div>
                 </td>

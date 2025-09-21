@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { UpdateItemCartState } from '@/types';
+import { UpdateItemShoppingState } from '@/types';
 
 export async function PATCH(
   request: NextRequest,
@@ -9,14 +9,10 @@ export async function PATCH(
   try {
     const { id } = await params
 
-    const body: UpdateItemCartState = await request.json()
-    const { storeId } = body
-    console.log(`${id} -  ${storeId}`)
-
     const item = await db.item.update({
       where: { id },
       data: {
-        storeId
+        stock: 0
       }
     })
 

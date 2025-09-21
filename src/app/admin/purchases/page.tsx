@@ -115,7 +115,7 @@ export default function Purchases() {
           />
         }
       > 
-              {/* Mobile list */}
+        {/* Mobile list */}
         <div className="sm:hidden">
           {filteredPurchases.length === 0 ? (
             <div className="px-4 py-6 text-sm text-slate-500">No matching purchases.</div>
@@ -126,7 +126,7 @@ export default function Purchases() {
                   <li key={i.id} className="rounded-xl ring-1 ring-slate-200 p-3">
                     <div className="flex purchases-start justify-between gap-3">
                       <div>
-                        <p className="font-medium text-slate-800">{i.item?.name}</p>
+                        <p className="font-medium text-sm text-slate-800">{i.item?.name}</p>
                         <p className="mt-0.5 text-xs text-slate-500">{i.store?.name}</p>
                       </div>
                       <div className="flex purchases-center gap-2">

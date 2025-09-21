@@ -13,7 +13,7 @@ interface QuickPurchaseFormProps {
 export function QuickPurchaseForm({ item, onSubmit }: QuickPurchaseFormProps) {
   const [formData, setFormData] = useState<CreatePurchaseData>({
     itemId: item.id,
-    storeId: '',
+    storeId: item.storeId || '',
     brand: '',
     unit: 'kg',
     amount: 1,

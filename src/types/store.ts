@@ -1,3 +1,5 @@
+import type { Item } from './item'
+
 export interface Store {
   id: string
   name: string
@@ -13,3 +15,10 @@ export interface CreateStoreData {
 export interface UpdateStoreData {
   name: string
 }
+
+export interface Cart {
+  id: string
+  name: string
+  items: Item[]
+}
+
