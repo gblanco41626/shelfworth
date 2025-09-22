@@ -116,28 +116,31 @@ export default function HomePage() {
           <ul className="space-y-3">
             {shoppingList.map((item) => {
               return (
-                <li key={item.id} className="flex items-center justify-between gap-3 rounded-xl ring-1 ring-slate-200 p-3">
-                  <p className="font-medium text-sm text-slate-800">{item.name}</p>
-                  <div className="flex gap-2 items-center">
-                    <select
-                      className="rounded-lg border-slate-300 text-sm"
-                      onChange={(e) => e.target.value && addToStoreCart(item.id, e.target.value)}
-                      required
-                    >
-                      <option value="">Add to store...</option>
-                      {stores.map((s) => (
-                        <option key={s.id} value={s.id}>{s.name}</option>
-                      ))}
-                    </select>
-                    <IconButton.Delete onClick={() => removeFromShoppingList(item.id)} />
+                <li key={item.id} className="flex flex-col justify-between rounded-xl ring-1 ring-slate-200 p-3">
+                  <div className='flex items-center justify-between gap-3'>
+                    <p className="font-medium text-sm text-slate-800">{item.name}</p>
+                    <div className="flex gap-2 items-center">
+                      <select
+                        className="rounded-lg border-slate-300 text-sm"
+                        onChange={(e) => e.target.value && addToStoreCart(item.id, e.target.value)}
+                        required
+                      >
+                        <option value="">Add to store...</option>
+                        {stores.map((s) => (
+                          <option key={s.id} value={s.id}>{s.name}</option>
+                        ))}
+                      </select>
+                      <IconButton.Delete onClick={() => removeFromShoppingList(item.id)} />
+                    </div>
                   </div>
+                  <div className='text-xs'>Costoco</div>
                 </li>
               );
             })}
           </ul>
         )}
       </Card>
-      
+
       <Card
         title="Out of Stock"
         icon={<Icon.OutOfStock />}
