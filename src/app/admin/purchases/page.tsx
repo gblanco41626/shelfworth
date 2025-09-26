@@ -6,11 +6,13 @@ import { Purchase, CreatePurchaseData } from "@/types";
 import { PurchaseForm } from "@/components/admin/purchase-form";
 import { formatDateForDisplay } from "@/lib/date-utils";
 import { formatCurrency, pricePerUnit } from "@/lib/currency-utils";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Purchases() {
   const [purchases, setPurchases] = useState<Purchase[]>([])
   const [editingPurchase, setEditingPurchase] = useState<Purchase | null>(null)
   const [purchaseQuery, setPurchaseQuery] = useState<string>("");
+  const toast = useToast()
 
   // Fetch data on component mount
   useEffect(() => {
@@ -39,11 +41,13 @@ export default function Purchases() {
       })
 
       if (response.ok) {
+        toast.success(`Purchase added`)
         fetchPurchases()
         const createdPurchase = await response.json();
         setEditingPurchase(createdPurchase);
       }
     } catch (error) {
+      toast.error(`Failed to add purchase`)
       console.error('Error adding purchase:', error)
     }
   }
@@ -59,10 +63,12 @@ export default function Purchases() {
       })
 
       if (response.ok) {
+        toast.success(`Purchase updated`)
         fetchPurchases()
         setEditingPurchase(null)
       }
     } catch (error) {
+      toast.error(`Failed to udpate purchase`)
       console.error('Error updating purchase:', error)
     }
   }
@@ -76,10 +82,12 @@ export default function Purchases() {
       })
 
       if (response.ok) {
+        toast.success(`Purchase deleted`)
         fetchPurchases()
         setEditingPurchase(null)
       }
     } catch (error) {
+      toast.error(`Failed to delete purchase`)
       console.error('Error deleting purchase:', error)
     }
   }

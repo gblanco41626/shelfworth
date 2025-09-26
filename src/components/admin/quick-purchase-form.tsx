@@ -5,6 +5,7 @@ import type { Item, Store, CreatePurchaseData } from '@/types'
 import { Input, Button } from '../tokens'
 import { formatDateForInput } from '@/lib/date-utils'
 import { formatCurrency, pricePerUnit } from '@/lib/currency-utils'
+import { useToast } from '@/hooks/use-toast'
 
 interface QuickPurchaseFormProps {
   item: Item, 
@@ -24,6 +25,7 @@ export function QuickPurchaseForm({ item, onSubmit }: QuickPurchaseFormProps) {
   })
 
   const [stores, setStores] = useState<Store[]>([])
+  const toast = useToast()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -40,6 +42,7 @@ export function QuickPurchaseForm({ item, onSubmit }: QuickPurchaseFormProps) {
       })
 
       if (response.ok) {
+        toast.success(`Purchase added`)
         onSubmit()
       }
     } catch (error) {

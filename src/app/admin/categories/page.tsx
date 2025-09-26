@@ -4,10 +4,12 @@ import React, { useState, useEffect } from "react";
 import { Card, Table, Icon, IconButton } from "@/components/tokens";
 import { Category, CreateCategoryData } from "@/types";
 import { CategoryForm } from "@/components/admin/category-form";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Categories() {
   const [categories, setCategories] = useState<Category[]>([])
   const [editingCategory, setEditingCategory] = useState<Category | null>(null)
+  const toast = useToast()
 
   useEffect(() => {
     fetchCategories()
@@ -34,9 +36,11 @@ export default function Categories() {
       })
 
       if (response.ok) {
+        toast.success(`Category ${data.name} added`)
         fetchCategories()
       }
     } catch (error) {
+      toast.error(`Failed to add category ${data.name}`)
       console.error('Error adding category:', error)
     }
   }
@@ -52,11 +56,12 @@ export default function Categories() {
       })
 
       if (response.ok) {
+        toast.success(`Category ${data.name} updated`)
         fetchCategories()
         setEditingCategory(null)
-        // setFormMode('none')
       }
     } catch (error) {
+      toast.error(`Failed to update category ${data.name}`)
       console.error('Error updating category:', error)
     }
   }
@@ -70,9 +75,11 @@ export default function Categories() {
       })
 
       if (response.ok) {
+        toast.success(`Category deleted`)
         fetchCategories()
       }
     } catch (error) {
+      toast.error(`Failed to delete category`)
       console.error('Error deleting category:', error)
     }
   }

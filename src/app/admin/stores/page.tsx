@@ -4,10 +4,12 @@ import React, { useState, useEffect } from "react";
 import { Card, Table, IconButton, Icon } from "@/components/tokens";
 import { Store, CreateStoreData } from "@/types";
 import { StoreForm } from "@/components/admin/store-form";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Stores() {
   const [stores, setStores] = useState<Store[]>([])
   const [editingStore, setEditingStore] = useState<Store | null>(null)
+  const toast = useToast()
 
   useEffect(() => {
     fetchStores()
@@ -34,9 +36,11 @@ export default function Stores() {
       })
 
       if (response.ok) {
+        toast.success(`Store ${data.name} added`)
         fetchStores()
       }
     } catch (error) {
+      toast.error(`Failed to add store ${data.name}`)
       console.error('Error adding store:', error)
     }
   }
@@ -52,11 +56,12 @@ export default function Stores() {
       })
 
       if (response.ok) {
+        toast.success(`Store ${data.name} created`)
         fetchStores()
         setEditingStore(null)
-        // setFormMode('none')
       }
     } catch (error) {
+      toast.error(`Failed to update store ${data.name}`)
       console.error('Error updating store:', error)
     }
   }
@@ -70,9 +75,12 @@ export default function Stores() {
       })
 
       if (response.ok) {
+        toast.error(`Store deleted`)
         fetchStores()
       }
     } catch (error) {
+
+      toast.error(`Failed to delete`)
       console.error('Error deleting store:', error)
     }
   }

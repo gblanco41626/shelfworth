@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error creating purchase:', error)
     return NextResponse.json(
-      { error: 'Failed to create purchase' },
+      { error: 'Failed to add purchase' },
       { status: 500 }
     )
   }

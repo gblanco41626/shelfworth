@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error creating store:', error)
     return NextResponse.json(
-      { error: 'Failed to create store' },
+      { error: 'Failed to add store' },
       { status: 500 }
     )
   }

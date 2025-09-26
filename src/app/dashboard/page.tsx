@@ -3,11 +3,13 @@
 import { useState, useEffect } from 'react'
 import { Card, Icon, IconButton } from '@/components/tokens'
 import type { Item, Store } from '@/types'
+import { useToast } from '@/hooks/use-toast'
 
 export default function HomePage() {
   const [outOfStock, setOutOfStock] = useState<Item[]>([])
   const [shoppingList, setShoppingList] = useState<Item[]>([])
   const [stores, setStores] = useState<Store[]>([])
+  const toast = useToast()
 
   const addToShoppingList = async (id: string) => {
     try {
@@ -18,10 +20,12 @@ export default function HomePage() {
       })
 
       if (response.ok) {
+        toast.success(`Item added to shopping list`)
         fetchShoppingList()
         fetchOutOfStock()
       }
     } catch (error) {
+      toast.error(`Failed to add item to shopping list`)
       console.error('Error updating item:', error)
     }
   }
@@ -35,10 +39,12 @@ export default function HomePage() {
       })
 
       if (response.ok) {
+        toast.success(`Item removed from shopping list`)
         fetchShoppingList()
         fetchOutOfStock()
       }
     } catch (error) {
+      toast.error(`Failed to remove item from shopping list`)
       console.error('Error updating item:', error)
     }
   }
@@ -52,10 +58,12 @@ export default function HomePage() {
       })
 
       if (response.ok) {
+        toast.success(`Item added to cart`)
         fetchShoppingList()
         fetchOutOfStock()
       }
     } catch (error) {
+      toast.error(`Failed to add item to cart`)
       console.error('Error updating item:', error)
     }
   }

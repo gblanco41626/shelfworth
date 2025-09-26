@@ -6,6 +6,7 @@ import { Item, CreateItemData } from "@/types";
 import { ItemForm } from "@/components/admin/item-form";
 import { QuickPurchaseForm } from "@/components/admin/quick-purchase-form";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 
 export default function Items() {
@@ -13,6 +14,7 @@ export default function Items() {
   const [editingItem, setEditingItem] = useState<Item | null>(null)
   const [itemQuery, setItemQuery] = useState<string>("");
   const router = useRouter();
+  const toast = useToast();
 
   // Fetch data on component mount
   useEffect(() => {
@@ -44,8 +46,10 @@ export default function Items() {
         fetchItems()
         const createdItem = await response.json();
         setEditingItem(createdItem);
+        toast.success(`Item ${data.name} added`)
       }
     } catch (error) {
+      toast.error(`Failed to add item ${data.name}`)
       console.error('Error adding item:', error)
     }
   }
@@ -63,8 +67,10 @@ export default function Items() {
       if (response.ok) {
         fetchItems()
         setEditingItem(null)
+        toast.success(`Item ${data.name} updated`)
       }
     } catch (error) {
+      toast.error(`Failed to update item ${data.name}`)
       console.error('Error updating item:', error)
     }
   }
@@ -80,8 +86,10 @@ export default function Items() {
       if (response.ok) {
         fetchItems()
         setEditingItem(null)
+        toast.success(`Item deleted`)
       }
     } catch (error) {
+      toast.error(`Failed to delete item`)
       console.error('Error deleting item:', error)
     }
   }
@@ -110,9 +118,11 @@ export default function Items() {
       })
 
       if (response.ok) {
+        toast.success(`Item added to shopping list`)
         fetchItems()
       }
     } catch (error) {
+      toast.error(`Failed to add item to shopping list`)
       console.error('Error updating item:', error)
     }
   }
