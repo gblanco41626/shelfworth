@@ -1,4 +1,4 @@
-import { Trash2, Pencil, Eye, ShoppingCart, CircleOff } from 'lucide-react';
+import { Trash2, Pencil, Eye, ShoppingCart, CircleOff, LogOut as LogoutIcon } from 'lucide-react';
 import React from 'react';
 
 import type { LucideIcon } from 'lucide-react';
@@ -57,8 +57,12 @@ const Shop: FC<ButtonType> = ({ ariaLabel = 'Shop', ...props }) => (
   <IconButtonBase IconComponent={ShoppingCart} ariaLabel={ariaLabel} {...props} />
 );
 
-const Cancel: FC<ButtonType> = ({ ariaLabel = 'View', ...props }) => (
+const Cancel: FC<ButtonType> = ({ ariaLabel = 'Cancel', ...props }) => (
   <IconButtonBase IconComponent={CircleOff} variant="outline" ariaLabel={ariaLabel} {...props} />
 );
 
-export const IconButton = { View, Edit, Delete, Shop, Cancel };
+const Logout: FC<ButtonType> = ({ ariaLabel = 'Logout', ...props }) => (
+  <IconButtonBase IconComponent={LogoutIcon} variant="outline" ariaLabel={ariaLabel} {...props} />
+);
+
+export const IconButton = { View, Edit, Delete, Shop, Cancel, Logout };

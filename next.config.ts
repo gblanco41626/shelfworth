@@ -9,11 +9,6 @@ const nextConfig: NextConfig = {
         destination: '/admin/items',
         permanent: true,
       },
-      {
-        source: '/',
-        destination: '/dashboard',
-        permanent: true,
-      },
     ];
   },
 };

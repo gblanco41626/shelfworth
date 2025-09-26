@@ -4,11 +4,13 @@
 import { Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 import { useEffect, useRef, useState } from 'react';
 
 import { ToastProvider } from '@/hooks/use-toast';
 
 import { SubTabBar } from './subtab-bar';
+import { IconButton } from './tokens';
 
 import type { SubTab } from './subtab-bar';
 
@@ -129,15 +131,16 @@ export default function NavShell({
           </div>
 
           {/* desktop top nav */}
-          <div className="hidden lg:flex mx-auto max-w-7xl px-6 py-3 items-center justify-between">
+          <div className="hidden lg:flex mx-auto px-6 py-3 items-center justify-between">
             <div className="flex items-center gap-3">
               <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-sky-600 text-white shadow-sm">
                 <span className="text-lg font-bold">S</span>
               </span>
               <span className="text-sm font-semibold">Shelfworth</span>
+              <NavLinks tabs={mainTabs} orientation="horizontal" />
             </div>
-            <NavLinks tabs={mainTabs} orientation="horizontal" />
             <div className="flex items-center gap-2" />
+            <IconButton.Logout onClick={() => signOut({ callbackUrl: '/' })} />
           </div>
         </header>
 
@@ -154,7 +157,8 @@ export default function NavShell({
               onClick={() => setOpen(false)}
             />
             <div
-              className="fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] transform bg-white shadow-xl ring-1 ring-slate-200 transition-transform duration-200 data-[state=open]:translate-x-0 data-[state=closed]:-translate-x-full"
+              className="fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] transform bg-white shadow-xl ring-1 ring-slate-200 transition-transform duration-200 data-[state=open]:translate-x-0 data-[state=closed]:-translate-x-full
+                        flex flex-col"
               data-state={open ? 'open' : 'closed'}
               role="dialog"
               aria-modal="true"
@@ -175,7 +179,9 @@ export default function NavShell({
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <div className="p-4">
+
+              {/* content scrolls, takes remaining height */}
+              <div className="p-4 flex-1 overflow-y-auto">
                 <NavLinks tabs={mainTabs} orientation="vertical" onNavigate={() => setOpen(false)} />
                 {subTabs.length > 0 && (
                   <>
@@ -186,12 +192,19 @@ export default function NavShell({
                   </>
                 )}
               </div>
+
+              {/* footer pinned to bottom, logout aligned right */}
+              <div className="p-4 border-t border-slate-200">
+                <div className="flex justify-end">
+                  <IconButton.Logout onClick={() => signOut({ callbackUrl: '/' })} />
+                </div>
+              </div>
             </div>
           </>
         )}
 
         {/* content */}
-        <main className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">{children}</main>
+        <main className="mx-auto p-4 sm:p-6 lg:p-8">{children}</main>
       </div>
     </ToastProvider>
   );
