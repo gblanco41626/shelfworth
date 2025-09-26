@@ -1,8 +1,10 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import type { CreateStoreData } from '@/types'
-import { Input, Button } from '../tokens'
+import { useEffect, useState } from 'react';
+
+import { Input, Button } from '../tokens';
+
+import type { CreateStoreData } from '@/types';
 
 interface StoreFormProps {
   onSubmit: (data: CreateStoreData) => void
@@ -15,21 +17,21 @@ export function StoreForm({
   onSubmit,
   onCancel,
   initialData,
-  isEditing = false
+  isEditing = false,
 }: StoreFormProps) {
   const [formData, setFormData] = useState<CreateStoreData>({
     name: '',
-  })
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    onSubmit(formData)
-  }
+    e.preventDefault();
+    onSubmit(formData);
+  };
 
   useEffect(() => {
     setFormData({
       name: initialData?.name || '',
-    })
+    });
   }, [initialData]);
 
   return (
@@ -47,8 +49,8 @@ export function StoreForm({
             Cancel
           </Button>
         )}
-        <Button type="submit">{isEditing ? "Save Changes" : "Add Store"}</Button>
+        <Button type="submit">{isEditing ? 'Save Changes' : 'Add Store'}</Button>
       </div>
     </form>
-  )
+  );
 }

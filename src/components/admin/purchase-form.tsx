@@ -1,10 +1,13 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import type { Item, Store, CreatePurchaseData } from '@/types'
-import { Input, Button } from '../tokens'
-import { formatDateForInput } from '@/lib/date-utils'
-import { formatCurrency, pricePerUnit } from '@/lib/currency-utils'
+import { useEffect, useState } from 'react';
+
+import { formatCurrency, pricePerUnit } from '@/lib/currency-utils';
+import { formatDateForInput } from '@/lib/date-utils';
+
+import { Input, Button } from '../tokens';
+
+import type { Item, Store, CreatePurchaseData } from '@/types';
 
 interface PurchaseFormProps {
   onSubmit: (data: CreatePurchaseData) => void
@@ -17,7 +20,7 @@ export function PurchaseForm({
   onSubmit,
   onCancel,
   initialData,
-  isEditing = false
+  isEditing = false,
 }: PurchaseFormProps) {
   const [formData, setFormData] = useState<CreatePurchaseData>({
     itemId: '',
@@ -27,39 +30,39 @@ export function PurchaseForm({
     amount: 1,
     dateBought: new Date(),
     quantity: 1,
-    price: 0
-  })
-  const [items, setItems] = useState<Item[]>([])
-  const [stores, setCategories] = useState<Store[]>([])
+    price: 0,
+  });
+  const [items, setItems] = useState<Item[]>([]);
+  const [stores, setCategories] = useState<Store[]>([]);
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    onSubmit(formData)
-  }
-  
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
   const fetchItems = async () => {
     try {
-      const response = await fetch('/api/items')
+      const response = await fetch('/api/items');
       if (response.ok) {
-        const items = await response.json()
-        setItems(items)
+        const items = await response.json();
+        setItems(items);
       }
     } catch (error) {
-      console.error('Error fetching items:', error)
+      console.error('Error fetching items:', error);
     }
-  }
-  
+  };
+
   const fetchStores = async () => {
     try {
-      const response = await fetch('/api/stores')
+      const response = await fetch('/api/stores');
       if (response.ok) {
-        const strs = await response.json()
-        setCategories(strs)
+        const strs = await response.json();
+        setCategories(strs);
       }
     } catch (error) {
-      console.error('Error fetching stores:', error)
+      console.error('Error fetching stores:', error);
     }
-  }
+  };
 
   useEffect(() => {
     setFormData({
@@ -70,13 +73,13 @@ export function PurchaseForm({
       amount: initialData?.amount || 1,
       dateBought: initialData?.dateBought || new Date(),
       quantity: initialData?.quantity || 1,
-      price: initialData?.price || 0
-    })
+      price: initialData?.price || 0,
+    });
   }, [initialData]);
 
   useEffect(() => {
-    fetchStores()
-    fetchItems()
+    fetchStores();
+    fetchItems();
   }, []);
 
   return (
@@ -97,8 +100,8 @@ export function PurchaseForm({
         </Input.Select>
         <Input.Text
           label="Brand"
-          value={formData.brand ?? ""}
-          onChange={(e) => setFormData((f) => ({ ...f, brand: e.target.value}))}
+          value={formData.brand ?? ''}
+          onChange={(e) => setFormData((f) => ({ ...f, brand: e.target.value }))}
           placeholder="e.g., Organic Valley"
         />
         <Input.Number
@@ -134,7 +137,7 @@ export function PurchaseForm({
         </Input.Select>
         <Input.Number
           label="Price"
-          value={formData.price ?? ""}
+          value={formData.price ?? ''}
           onChange={(e) => setFormData((f) => ({ ...f, price: parseFloat(e.target.value) }))}
           required
         />
@@ -148,7 +151,7 @@ export function PurchaseForm({
         </div>
         <Input.Select
           label="Store"
-          value={formData.storeId ?? ""}
+          value={formData.storeId ?? ''}
           onChange={(e) => setFormData((f) => ({ ...f, storeId: e.target.value }))}
           required
         >
@@ -162,12 +165,12 @@ export function PurchaseForm({
         <Input.Date
           label="Date Bought"
           value={formatDateForInput(formData.dateBought)}
-          onChange={(e) => setFormData((f) => ({ ...f, dateBought: new Date(e.target.value)}))}
+          onChange={(e) => setFormData((f) => ({ ...f, dateBought: new Date(e.target.value) }))}
         />
         <Input.Date
           label="Expiration Date"
           value={formatDateForInput(formData.expirationDate)}
-          onChange={(e) => setFormData((f) => ({ ...f, expirationDate: new Date(e.target.value)}))}
+          onChange={(e) => setFormData((f) => ({ ...f, expirationDate: new Date(e.target.value) }))}
           className="w-full rounded-xl border-slate-300 focus:border-sky-400 focus:ring-sky-400"
         />
         <div className="flex items-center justify-end gap-2">
@@ -176,9 +179,9 @@ export function PurchaseForm({
               Cancel
             </Button>
           )}
-          <Button type="submit">{isEditing ? "Save Changes" : "Add Purchase"}</Button>
+          <Button type="submit">{isEditing ? 'Save Changes' : 'Add Purchase'}</Button>
         </div>
       </form>
     </div>
-  )
+  );
 }

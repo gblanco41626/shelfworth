@@ -1,105 +1,107 @@
-"use client"
+'use client';
 
-import React, { useState, useEffect } from "react";
-import { Card, Table, IconButton, Icon } from "@/components/tokens";
-import { Store, CreateStoreData } from "@/types";
-import { StoreForm } from "@/components/admin/store-form";
-import { useToast } from "@/hooks/use-toast";
+import React, { useState, useEffect } from 'react';
+
+import { StoreForm } from '@/components/admin/store-form';
+import { Card, Table, IconButton, Icon } from '@/components/tokens';
+import { useToast } from '@/hooks/use-toast';
+
+import type { Store, CreateStoreData } from '@/types';
 
 export default function Stores() {
-  const [stores, setStores] = useState<Store[]>([])
-  const [editingStore, setEditingStore] = useState<Store | null>(null)
-  const toast = useToast()
+  const [stores, setStores] = useState<Store[]>([]);
+  const [editingStore, setEditingStore] = useState<Store | null>(null);
+  const toast = useToast();
 
   useEffect(() => {
-    fetchStores()
-  }, [])
+    fetchStores();
+  }, []);
 
   const fetchStores = async () => {
     try {
-      const response = await fetch('/api/stores')
+      const response = await fetch('/api/stores');
       if (response.ok) {
-        const cats = await response.json()
-        setStores(cats)
+        const cats = await response.json();
+        setStores(cats);
       }
     } catch (error) {
-      console.error('Error fetching stores:', error)
+      console.error('Error fetching stores:', error);
     }
-  }
+  };
 
   const handleAddStore = async (data: CreateStoreData) => {
     try {
       const response = await fetch('/api/stores', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      })
+        body: JSON.stringify(data),
+      });
 
       if (response.ok) {
-        toast.success(`Store ${data.name} added`)
-        fetchStores()
+        toast.success(`Store ${data.name} added`);
+        fetchStores();
       }
     } catch (error) {
-      toast.error(`Failed to add store ${data.name}`)
-      console.error('Error adding store:', error)
+      toast.error(`Failed to add store ${data.name}`);
+      console.error('Error adding store:', error);
     }
-  }
+  };
 
   const handleUpdateStore = async (data: CreateStoreData) => {
-    if (!editingStore) return
+    if (!editingStore) return;
 
     try {
       const response = await fetch(`/api/stores/${editingStore.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      })
+        body: JSON.stringify(data),
+      });
 
       if (response.ok) {
-        toast.success(`Store ${data.name} created`)
-        fetchStores()
-        setEditingStore(null)
+        toast.success(`Store ${data.name} created`);
+        fetchStores();
+        setEditingStore(null);
       }
     } catch (error) {
-      toast.error(`Failed to update store ${data.name}`)
-      console.error('Error updating store:', error)
+      toast.error(`Failed to update store ${data.name}`);
+      console.error('Error updating store:', error);
     }
-  }
+  };
 
   const handleDeleteStore = async (id: string) => {
-    if (!confirm('Are you sure? This will also delete all purchases for this store.')) return
+    if (!confirm('Are you sure? This will also delete all purchases for this store.')) return;
 
     try {
       const response = await fetch(`/api/stores/${id}`, {
-        method: 'DELETE'
-      })
+        method: 'DELETE',
+      });
 
       if (response.ok) {
-        toast.error(`Store deleted`)
-        fetchStores()
+        toast.error('Store deleted');
+        fetchStores();
       }
     } catch (error) {
 
-      toast.error(`Failed to delete`)
-      console.error('Error deleting store:', error)
+      toast.error('Failed to delete');
+      console.error('Error deleting store:', error);
     }
-  }
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <Card title={editingStore ? "Edit Store" : "New Store"} icon={<Icon.Store />}> 
+      <Card title={editingStore ? 'Edit Store' : 'New Store'} icon={<Icon.Store />}>
         <StoreForm
           onSubmit={editingStore ? handleUpdateStore : handleAddStore}
           onCancel={() => {
-            setEditingStore(null)
+            setEditingStore(null);
           }}
           initialData={editingStore || undefined}
           isEditing={!!editingStore}
         />
       </Card>
 
-      <Card title="Stores" icon={<Icon.Store />}> 
-        <Table columns={["Name", "Actions"]}>
+      <Card title="Stores" icon={<Icon.Store />}>
+        <Table columns={['Name', 'Actions']}>
           {stores.map((i) => (
             <tr key={i.id} className="hover:bg-slate-50/50">
               <td className="px-4 py-2 text-sm text-slate-700">{i.name}</td>

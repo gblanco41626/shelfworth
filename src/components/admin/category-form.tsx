@@ -1,8 +1,10 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import type { CreateCategoryData } from '@/types'
-import { Input, Button } from '../tokens'
+import { useEffect, useState } from 'react';
+
+import { Input, Button } from '../tokens';
+
+import type { CreateCategoryData } from '@/types';
 
 interface CategoryFormProps {
   onSubmit: (data: CreateCategoryData) => void
@@ -15,21 +17,21 @@ export function CategoryForm({
   onSubmit,
   onCancel,
   initialData,
-  isEditing = false
+  isEditing = false,
 }: CategoryFormProps) {
   const [formData, setFormData] = useState<CreateCategoryData>({
     name: '',
-  })
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    onSubmit(formData)
-  }
+    e.preventDefault();
+    onSubmit(formData);
+  };
 
   useEffect(() => {
     setFormData({
       name: initialData?.name || '',
-    })
+    });
   }, [initialData]);
 
   return (
@@ -47,8 +49,8 @@ export function CategoryForm({
             Cancel
           </Button>
         )}
-        <Button type="submit">{isEditing ? "Save Changes" : "Add Category"}</Button>
+        <Button type="submit">{isEditing ? 'Save Changes' : 'Add Category'}</Button>
       </div>
     </form>
-  )
+  );
 }

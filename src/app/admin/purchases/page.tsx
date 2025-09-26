@@ -1,35 +1,37 @@
-"use client"
+'use client';
 
-import React, { useState, useEffect, useMemo } from "react";
-import { Card, Table, Icon, IconButton, Input } from "@/components/tokens"
-import { Purchase, CreatePurchaseData } from "@/types";
-import { PurchaseForm } from "@/components/admin/purchase-form";
-import { formatDateForDisplay } from "@/lib/date-utils";
-import { formatCurrency, pricePerUnit } from "@/lib/currency-utils";
-import { useToast } from "@/hooks/use-toast";
+import React, { useState, useEffect, useMemo } from 'react';
+
+import { PurchaseForm } from '@/components/admin/purchase-form';
+import { Card, Table, Icon, IconButton, Input } from '@/components/tokens';
+import { useToast } from '@/hooks/use-toast';
+import { formatCurrency, pricePerUnit } from '@/lib/currency-utils';
+import { formatDateForDisplay } from '@/lib/date-utils';
+
+import type { Purchase, CreatePurchaseData } from '@/types';
 
 export default function Purchases() {
-  const [purchases, setPurchases] = useState<Purchase[]>([])
-  const [editingPurchase, setEditingPurchase] = useState<Purchase | null>(null)
-  const [purchaseQuery, setPurchaseQuery] = useState<string>("");
-  const toast = useToast()
+  const [purchases, setPurchases] = useState<Purchase[]>([]);
+  const [editingPurchase, setEditingPurchase] = useState<Purchase | null>(null);
+  const [purchaseQuery, setPurchaseQuery] = useState<string>('');
+  const toast = useToast();
 
   // Fetch data on component mount
   useEffect(() => {
-    fetchPurchases()
-  }, [])
+    fetchPurchases();
+  }, []);
 
   const fetchPurchases = async () => {
     try {
-      const response = await fetch('/api/purchases')
+      const response = await fetch('/api/purchases');
       if (response.ok) {
-        const purchases = await response.json()
-        setPurchases(purchases)
+        const purchases = await response.json();
+        setPurchases(purchases);
       }
     } catch (error) {
-      console.error('Error fetching purchases:', error)
+      console.error('Error fetching purchases:', error);
     }
-  }
+  };
 
   // Purchase handlers
   const handleAddPurchase = async (data: CreatePurchaseData) => {
@@ -37,60 +39,60 @@ export default function Purchases() {
       const response = await fetch('/api/purchases', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      })
+        body: JSON.stringify(data),
+      });
 
       if (response.ok) {
-        toast.success(`Purchase added`)
-        fetchPurchases()
+        toast.success('Purchase added');
+        fetchPurchases();
         const createdPurchase = await response.json();
         setEditingPurchase(createdPurchase);
       }
     } catch (error) {
-      toast.error(`Failed to add purchase`)
-      console.error('Error adding purchase:', error)
+      toast.error('Failed to add purchase');
+      console.error('Error adding purchase:', error);
     }
-  }
+  };
 
   const handleUpdatePurchase = async (data: CreatePurchaseData) => {
-    if (!editingPurchase) return
+    if (!editingPurchase) return;
 
     try {
       const response = await fetch(`/api/purchases/${editingPurchase.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      })
+        body: JSON.stringify(data),
+      });
 
       if (response.ok) {
-        toast.success(`Purchase updated`)
-        fetchPurchases()
-        setEditingPurchase(null)
+        toast.success('Purchase updated');
+        fetchPurchases();
+        setEditingPurchase(null);
       }
     } catch (error) {
-      toast.error(`Failed to udpate purchase`)
-      console.error('Error updating purchase:', error)
+      toast.error('Failed to udpate purchase');
+      console.error('Error updating purchase:', error);
     }
-  }
+  };
 
   const handleDeletePurchase = async (id: string) => {
-    if (!confirm('Are you sure?')) return
+    if (!confirm('Are you sure?')) return;
 
     try {
       const response = await fetch(`/api/purchases/${id}`, {
-        method: 'DELETE'
-      })
+        method: 'DELETE',
+      });
 
       if (response.ok) {
-        toast.success(`Purchase deleted`)
-        fetchPurchases()
-        setEditingPurchase(null)
+        toast.success('Purchase deleted');
+        fetchPurchases();
+        setEditingPurchase(null);
       }
     } catch (error) {
-      toast.error(`Failed to delete purchase`)
-      console.error('Error deleting purchase:', error)
+      toast.error('Failed to delete purchase');
+      console.error('Error deleting purchase:', error);
     }
-  }
+  };
 
   const filtered = useMemo(() => (
     purchases.filter((i) => {
@@ -103,11 +105,11 @@ export default function Purchases() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <Card title={editingPurchase ? "Edit Purchase" : "New Purchase"} icon={<Icon.Purchase />}> 
+      <Card title={editingPurchase ? 'Edit Purchase' : 'New Purchase'} icon={<Icon.Purchase />}>
         <PurchaseForm
           onSubmit={editingPurchase ? handleUpdatePurchase : handleAddPurchase}
           onCancel={() => {
-            setEditingPurchase(null)
+            setEditingPurchase(null);
           }}
           initialData={editingPurchase || undefined}
           isEditing={!!editingPurchase}
@@ -124,15 +126,14 @@ export default function Purchases() {
             placeholder="Search purchases"
           />
         }
-      > 
+      >
         {/* Mobile list */}
         <div className="sm:hidden">
           {filtered.length === 0 ? (
             <div className="px-4 py-6 text-sm text-slate-500">No matching purchases.</div>
           ) : (
             <ul className="space-y-3">
-              {filtered.map((i) => {
-                return (
+              {filtered.map((i) => (
                   <li key={i.id} className="rounded-xl ring-1 ring-slate-200 p-3">
                     <div className="flex purchases-start justify-between gap-3">
                       <div>
@@ -159,17 +160,16 @@ export default function Purchases() {
                       </div>
                       <div>
                         <p className="uppercase tracking-wide text-slate-400">$/Unit</p>
-                        <p className="mt-0.5">{`${formatCurrency(pricePerUnit(i),)}`}</p>
+                        <p className="mt-0.5">{`${formatCurrency(pricePerUnit(i))}`}</p>
                       </div>
                     </div>
                   </li>
-                );
-              })}
+                ))}
             </ul>
           )}
         </div>
         <div className="hidden sm:block">
-          <Table columns={["Item", "Store", "Date", "Price", "$/Unit", "Actions"]}>
+          <Table columns={['Item', 'Store', 'Date', 'Price', '$/Unit', 'Actions']}>
             {filtered.map((i) => (
               <tr key={i.id} className="hover:bg-slate-50/50">
                 <td className="px-4 py-2 text-sm text-slate-700">{i.item?.name}</td>
@@ -177,7 +177,7 @@ export default function Purchases() {
                 <td className="px-4 py-2 text-xs text-slate-500">{formatDateForDisplay(i.dateBought)}</td>
                 <td className="px-4 py-2 text-sm tabular-nums">{formatCurrency(i.price)}</td>
                 <td className="px-4 py-2 text-sm tabular-nums">
-                  <p>{formatCurrency(pricePerUnit(i),)}</p>
+                  <p>{formatCurrency(pricePerUnit(i))}</p>
                   <p className="text-xs">/{i.unit}</p>
                 </td>
                 <td className="px-4 py-2">

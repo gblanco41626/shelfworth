@@ -1,4 +1,4 @@
-import type { Item } from './item'
+import type { Item } from './item';
 
 export interface Store {
   id: string
@@ -21,4 +21,3 @@ export interface Cart {
   name: string
   items: Item[]
 }
-

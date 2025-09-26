@@ -1,6 +1,8 @@
-import { db } from '@/lib/db'
-import type { ItemWithRelations, PurchaseWithRelations, Store, Item } from '@/types'
-import { TEMP_USER_ID } from './constants'
+import { db } from '@/lib/db';
+
+import { TEMP_USER_ID } from './constants';
+
+import type { ItemWithRelations, PurchaseWithRelations, Store, Item } from '@/types';
 
 export const ItemUtils = {
   getItemData: async (itemId: string): Promise<{
@@ -14,31 +16,31 @@ export const ItemUtils = {
         category: true,
         purchases: {
           include: { store: true },
-          orderBy: { dateBought: { sort: 'desc', nulls: 'last' } }
+          orderBy: { dateBought: { sort: 'desc', nulls: 'last' } },
         },
       },
     });
 
     const purchases = await db.purchase.findMany({
-      where: { itemId: itemId },
-      include : {
+      where: { itemId },
+      include: {
         item: true,
-        store: true
-      }
+        store: true,
+      },
     });
 
     const storeIds = purchases.map((p) => p.storeId ?? '');
-    let stores: Store[] = []
+    let stores: Store[] = [];
 
     if (storeIds.length > 0) {
       stores = await db.store.findMany({
         where: {
-          id: { in: storeIds }
-        }
-      })
+          id: { in: storeIds },
+        },
+      });
     }
 
-    return { item, purchases, stores }
+    return { item, purchases, stores };
   },
 
   // Update item stock after purchase changes
@@ -47,28 +49,24 @@ export const ItemUtils = {
       where: { id: itemId },
       data: {
         stock: { increment: stockIncrement },
-        storeId: null
-      }
-    })
+        storeId: null,
+      },
+    });
   },
 
   // Get low stock items (stock below threshold)
-  getLowStockItems: async (threshold: number = 1): Promise<object[]> => {
-    return await db.item.findMany({
+  getLowStockItems: async (threshold: number = 1): Promise<object[]> => await db.item.findMany({
       where: {
         userId: TEMP_USER_ID,
-        stock: { lte: threshold }
-      }
-    })
-  },
+        stock: { lte: threshold },
+      },
+    }),
 
   // Get out of stock items
-  getOutOfStockItems: async (): Promise<Item[]> => {
-    return await db.item.findMany({
+  getOutOfStockItems: async (): Promise<Item[]> => await db.item.findMany({
       where: {
         userId: TEMP_USER_ID,
-        stock: 0
-      }
-    })
-  }
-}
+        stock: 0,
+      },
+    }),
+};

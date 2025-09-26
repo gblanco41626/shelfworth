@@ -1,104 +1,106 @@
-"use client"
+'use client';
 
-import React, { useState, useEffect } from "react";
-import { Card, Table, Icon, IconButton } from "@/components/tokens";
-import { Category, CreateCategoryData } from "@/types";
-import { CategoryForm } from "@/components/admin/category-form";
-import { useToast } from "@/hooks/use-toast";
+import React, { useState, useEffect } from 'react';
+
+import { CategoryForm } from '@/components/admin/category-form';
+import { Card, Table, Icon, IconButton } from '@/components/tokens';
+import { useToast } from '@/hooks/use-toast';
+
+import type { Category, CreateCategoryData } from '@/types';
 
 export default function Categories() {
-  const [categories, setCategories] = useState<Category[]>([])
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null)
-  const toast = useToast()
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const toast = useToast();
 
   useEffect(() => {
-    fetchCategories()
-  }, [])
+    fetchCategories();
+  }, []);
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('/api/categories')
+      const response = await fetch('/api/categories');
       if (response.ok) {
-        const cats = await response.json()
-        setCategories(cats)
+        const cats = await response.json();
+        setCategories(cats);
       }
     } catch (error) {
-      console.error('Error fetching categories:', error)
+      console.error('Error fetching categories:', error);
     }
-  }
+  };
 
   const handleAddCategory = async (data: CreateCategoryData) => {
     try {
       const response = await fetch('/api/categories', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      })
+        body: JSON.stringify(data),
+      });
 
       if (response.ok) {
-        toast.success(`Category ${data.name} added`)
-        fetchCategories()
+        toast.success(`Category ${data.name} added`);
+        fetchCategories();
       }
     } catch (error) {
-      toast.error(`Failed to add category ${data.name}`)
-      console.error('Error adding category:', error)
+      toast.error(`Failed to add category ${data.name}`);
+      console.error('Error adding category:', error);
     }
-  }
+  };
 
   const handleUpdateCategory = async (data: CreateCategoryData) => {
-    if (!editingCategory) return
+    if (!editingCategory) return;
 
     try {
       const response = await fetch(`/api/categories/${editingCategory.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      })
+        body: JSON.stringify(data),
+      });
 
       if (response.ok) {
-        toast.success(`Category ${data.name} updated`)
-        fetchCategories()
-        setEditingCategory(null)
+        toast.success(`Category ${data.name} updated`);
+        fetchCategories();
+        setEditingCategory(null);
       }
     } catch (error) {
-      toast.error(`Failed to update category ${data.name}`)
-      console.error('Error updating category:', error)
+      toast.error(`Failed to update category ${data.name}`);
+      console.error('Error updating category:', error);
     }
-  }
+  };
 
   const handleDeleteCategory = async (id: string) => {
-    if (!confirm('Are you sure? This will also delete all purchases for this category.')) return
+    if (!confirm('Are you sure? This will also delete all purchases for this category.')) return;
 
     try {
       const response = await fetch(`/api/categories/${id}`, {
-        method: 'DELETE'
-      })
+        method: 'DELETE',
+      });
 
       if (response.ok) {
-        toast.success(`Category deleted`)
-        fetchCategories()
+        toast.success('Category deleted');
+        fetchCategories();
       }
     } catch (error) {
-      toast.error(`Failed to delete category`)
-      console.error('Error deleting category:', error)
+      toast.error('Failed to delete category');
+      console.error('Error deleting category:', error);
     }
-  }
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <Card title={editingCategory ? "Edit Category" : "New Category"} icon={<Icon.Category />}> 
+      <Card title={editingCategory ? 'Edit Category' : 'New Category'} icon={<Icon.Category />}>
         <CategoryForm
           onSubmit={editingCategory ? handleUpdateCategory : handleAddCategory}
           onCancel={() => {
-            setEditingCategory(null)
+            setEditingCategory(null);
           }}
           initialData={editingCategory || undefined}
           isEditing={!!editingCategory}
         />
       </Card>
 
-      <Card title="Categories" icon={<Icon.Category />}> 
-        <Table columns={["Name", "Actions"]}>
+      <Card title="Categories" icon={<Icon.Category />}>
+        <Table columns={['Name', 'Actions']}>
           {categories.map((i) => (
             <tr key={i.id} className="hover:bg-slate-50/50">
               <td className="px-4 py-2 text-sm text-slate-700">{i.name}</td>

@@ -3,12 +3,12 @@
  */
 export const formatDateForInput = (date: Date | string | null | undefined): string => {
   if (!date) return '';
-  
+
   const dateObj = typeof date === 'string' ? new Date(date) : date;
-  
+
   // Check if date is valid
   if (isNaN(dateObj.getTime())) return '';
-  
+
   return dateObj.toISOString().split('T')[0];
 };
 
@@ -17,15 +17,15 @@ export const formatDateForInput = (date: Date | string | null | undefined): stri
  */
 export const formatDateTimeForInput = (date: Date | string | null | undefined): string => {
   if (!date) return '';
-  
+
   const dateObj = typeof date === 'string' ? new Date(date) : date;
-  
+
   if (isNaN(dateObj.getTime())) return '';
-  
+
   // Get local timezone offset and adjust
   const offset = dateObj.getTimezoneOffset();
   const localDate = new Date(dateObj.getTime() - (offset * 60 * 1000));
-  
+
   return localDate.toISOString().slice(0, 16);
 };
 
@@ -34,15 +34,15 @@ export const formatDateTimeForInput = (date: Date | string | null | undefined): 
  */
 export const formatDateForDisplay = (date: Date | string | null | undefined): string => {
   if (!date) return 'No date';
-  
+
   const dateObj = typeof date === 'string' ? new Date(date) : date;
-  
+
   if (isNaN(dateObj.getTime())) return 'Invalid date';
-  
+
   return dateObj.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
-    day: 'numeric'
+    day: 'numeric',
   });
 };
 
@@ -51,7 +51,7 @@ export const formatDateForDisplay = (date: Date | string | null | undefined): st
  */
 export const parseInputDate = (dateString: string): Date | null => {
   if (!dateString) return null;
-  
+
   const date = new Date(dateString);
   return isNaN(date.getTime()) ? null : date;
 };

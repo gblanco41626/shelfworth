@@ -1,8 +1,8 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { CheckCircle2, XCircle, Info, AlertTriangle, Loader2, X } from "lucide-react";
+import { CheckCircle2, XCircle, Info, AlertTriangle, Loader2, X } from 'lucide-react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
-type ToastVariant = "success" | "error" | "info" | "warning" | "loading";
-type ToastPosition = "bottom-right" | "bottom" | "top-right" | "top";
+type ToastVariant = 'success' | 'error' | 'info' | 'warning' | 'loading';
+type ToastPosition = 'bottom-right' | 'bottom' | 'top-right' | 'top';
 
 export type ShowToastOptions = {
   title?: string;
@@ -29,20 +29,20 @@ type ToastContextValue = {
 const ToastContext = createContext<ToastContextValue | null>(null);
 
 const VARIANT_STYLES: Record<ToastVariant, { wrap: string; icon: React.ElementType }> = {
-  success: { wrap: "bg-emerald-600 text-white", icon: CheckCircle2 },
-  error:   { wrap: "bg-rose-600 text-white",    icon: XCircle },
-  info:    { wrap: "bg-sky-600 text-white",     icon: Info },
-  warning: { wrap: "bg-amber-600 text-white",   icon: AlertTriangle },
-  loading: { wrap: "bg-neutral-800 text-white", icon: Loader2 },
+  success: { wrap: 'bg-emerald-600 text-white', icon: CheckCircle2 },
+  error: { wrap: 'bg-rose-600 text-white',    icon: XCircle },
+  info: { wrap: 'bg-sky-600 text-white',     icon: Info },
+  warning: { wrap: 'bg-amber-600 text-white',   icon: AlertTriangle },
+  loading: { wrap: 'bg-neutral-800 text-white', icon: Loader2 },
 };
 
 function positionClass(pos: ToastPosition) {
   switch (pos) {
-    case "top":         return "top-4 left-1/2 -translate-x-1/2";
-    case "top-right":   return "top-4 right-4";
-    case "bottom":      return "bottom-4 left-1/2 -translate-x-1/2";
-    case "bottom-right":
-    default:            return "bottom-4 right-4";
+    case 'top':         return 'top-4 left-1/2 -translate-x-1/2';
+    case 'top-right':   return 'top-4 right-4';
+    case 'bottom':      return 'bottom-4 left-1/2 -translate-x-1/2';
+    case 'bottom-right':
+    default:            return 'bottom-4 right-4';
   }
 }
 
@@ -50,7 +50,7 @@ function ToastCard({ t, onClose }: { t: ToastItem; onClose: (id: string) => void
   const Icon = VARIANT_STYLES[t.variant].icon;
 
   useEffect(() => {
-    if (t.variant === "loading") return;
+    if (t.variant === 'loading') return;
     const id = window.setTimeout(() => onClose(t.id), t.duration);
     return () => window.clearTimeout(id);
   }, [t, onClose]);
@@ -62,7 +62,7 @@ function ToastCard({ t, onClose }: { t: ToastItem; onClose: (id: string) => void
       aria-live="polite"
       aria-atomic="true"
     >
-      <Icon className={`mt-0.5 h-5 w-5 flex-none ${t.variant === "loading" ? "animate-spin" : ""}`} aria-hidden />
+      <Icon className={`mt-0.5 h-5 w-5 flex-none ${t.variant === 'loading' ? 'animate-spin' : ''}`} aria-hidden />
       <div className="min-w-0 flex-1">
         {t.title ? <div className="text-sm font-semibold leading-5 truncate">{t.title}</div> : null}
         {t.description ? <div className="text-sm/5 opacity-90 break-words">{t.description}</div> : null}
@@ -92,11 +92,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       // if same id exists, replace it (handy for upgrading loading -> success)
       const next: ToastItem = {
         id,
-        title: opts.title ?? "",
-        description: opts.description ?? "",
-        variant: opts.variant ?? "success",
+        title: opts.title ?? '',
+        description: opts.description ?? '',
+        variant: opts.variant ?? 'success',
         duration: opts.duration ?? 3000,
-        position: opts.position ?? "bottom-right",
+        position: opts.position ?? 'bottom-right',
       };
       const has = prev.some((p) => p.id === id);
       return has ? prev.map((p) => (p.id === id ? next : p)) : [...prev, next];
@@ -110,10 +110,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const mk = useCallback(
     (variant: ToastVariant, input: string | Partial<ShowToastOptions>) => {
       const base: Partial<ShowToastOptions> =
-        typeof input === "string" ? { title: input } : input;
+        typeof input === 'string' ? { title: input } : input;
       return show({ variant, ...base });
     },
-    [show]
+    [show],
   );
 
   const value = useMemo<ToastContextValue>(
@@ -121,16 +121,16 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       show,
       hide,
       clear,
-      success: (m) => mk("success", m),
-      error:   (m) => mk("error", m),
-      info:    (m) => mk("info", m),
-      warning: (m) => mk("warning", m),
+      success: (m) => mk('success', m),
+      error: (m) => mk('error', m),
+      info: (m) => mk('info', m),
+      warning: (m) => mk('warning', m),
       loading: (m = {}) => {
-        const base = typeof m === "string" ? { title: m } : m;
-        return show({ variant: "loading", duration: 0, ...base });
+        const base = typeof m === 'string' ? { title: m } : m;
+        return show({ variant: 'loading', duration: 0, ...base });
       },
     }),
-    [show, hide, clear, mk]
+    [show, hide, clear, mk],
   );
 
   // Local keyframes (kept here for easy copy-paste)
@@ -147,7 +147,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       {children}
 
       {/* Viewports grouped by position so multiple stacks look tidy */}
-      {(["bottom-right","bottom","top-right","top"] as ToastPosition[]).map((pos) => {
+      {(['bottom-right','bottom','top-right','top'] as ToastPosition[]).map((pos) => {
         const stack = toasts.filter((t) => t.position === pos);
         if (!stack.length) return null;
         return (
@@ -165,7 +165,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 export function useToast() {
   const ctx = useContext(ToastContext);
   if (!ctx) {
-    throw new Error("useToast must be used within a <ToastProvider>");
+    throw new Error('useToast must be used within a <ToastProvider>');
   }
   return ctx;
 }

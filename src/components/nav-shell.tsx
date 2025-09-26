@@ -1,31 +1,35 @@
 // components/NavShell.tsx
-"use client";
+'use client';
 
-import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
-import { SubTabBar, SubTab } from "./subtab-bar";
-import { ToastProvider } from "@/hooks/use-toast";
+import { Menu, X } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+
+import { ToastProvider } from '@/hooks/use-toast';
+
+import { SubTabBar } from './subtab-bar';
+
+import type { SubTab } from './subtab-bar';
 
 type Tab = { href: string; label: string };
 
 function NavLinks({
   tabs,
   onNavigate,
-  orientation = "horizontal",
+  orientation = 'horizontal',
 }: {
   tabs: Tab[];
   onNavigate?: () => void;
-  orientation?: "horizontal" | "vertical";
+  orientation?: 'horizontal' | 'vertical';
 }) {
   const pathname = usePathname();
   return (
     <nav
       className={
-        orientation === "horizontal"
-          ? "flex items-center gap-1"
-          : "flex flex-col gap-1"
+        orientation === 'horizontal'
+          ? 'flex items-center gap-1'
+          : 'flex flex-col gap-1'
       }
     >
       {tabs.map(({ href, label }) => {
@@ -36,11 +40,11 @@ function NavLinks({
             href={href}
             onClick={onNavigate}
             className={[
-              "rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+              'rounded-lg px-3 py-2 text-sm font-medium transition-colors',
               active
-                ? "bg-sky-50 text-sky-700"
-                : "text-slate-700 hover:bg-slate-100 hover:text-slate-900",
-            ].join(" ")}
+                ? 'bg-sky-50 text-sky-700'
+                : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900',
+            ].join(' ')}
           >
             {label}
           </Link>
@@ -68,8 +72,8 @@ export default function NavShell({
 
     const apply = () =>
       document.documentElement.style.setProperty(
-        "--main-nav-h",
-        `${el.offsetHeight}px`
+        '--main-nav-h',
+        `${el.offsetHeight}px`,
       );
 
     apply(); // initial
@@ -77,22 +81,22 @@ export default function NavShell({
     ro.observe(el);
 
     const onResize = () => apply();
-    window.addEventListener("resize", onResize);
+    window.addEventListener('resize', onResize);
 
     return () => {
       ro.disconnect();
-      window.removeEventListener("resize", onResize);
+      window.removeEventListener('resize', onResize);
     };
   }, []);
 
   // lock body scroll when drawer open
   useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
+    document.body.style.overflow = open ? 'hidden' : '';
   }, [open]);
 
   const mainTabs: Tab[] = [
-    { href: "/dashboard", label: "Dashboard" },
-    { href: "/admin", label: "Admin" },
+    { href: '/dashboard', label: 'Dashboard' },
+    { href: '/admin', label: 'Admin' },
   ];
 
   return (
@@ -151,7 +155,7 @@ export default function NavShell({
             />
             <div
               className="fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] transform bg-white shadow-xl ring-1 ring-slate-200 transition-transform duration-200 data-[state=open]:translate-x-0 data-[state=closed]:-translate-x-full"
-              data-state={open ? "open" : "closed"}
+              data-state={open ? 'open' : 'closed'}
               role="dialog"
               aria-modal="true"
               aria-label="Navigation"

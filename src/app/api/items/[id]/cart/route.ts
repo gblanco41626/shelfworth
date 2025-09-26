@@ -1,31 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/db'
-import { UpdateItemCartState } from '@/types';
+import { NextResponse } from 'next/server';
+
+import { db } from '@/lib/db';
+
+import type { UpdateItemCartState } from '@/types';
+import type { NextRequest } from 'next/server';
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string; }> }
+  { params }: { params: Promise<{ id: string; }> },
 ) {
   try {
-    const { id } = await params
+    const { id } = await params;
 
-    const body: UpdateItemCartState = await request.json()
-    const { storeId } = body
-    console.log(`${id} -  ${storeId}`)
+    const body: UpdateItemCartState = await request.json();
+    const { storeId } = body;
 
     const item = await db.item.update({
       where: { id },
       data: {
-        storeId
-      }
-    })
+        storeId,
+      },
+    });
 
-    return NextResponse.json(item)
+    return NextResponse.json(item);
   } catch (error) {
-    console.error('Error updating item:', error)
+    console.error('Error updating item:', error);
     return NextResponse.json(
       { error: 'Failed to update item' },
-      { status: 500 }
-    )
+      { status: 500 },
+    );
   }
 }

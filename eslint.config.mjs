@@ -47,7 +47,6 @@ const eslintConfig = [
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-empty-function': 'warn',
-      '@typescript-eslint/prefer-const': 'error',
       '@typescript-eslint/no-var-requires': 'error',
       '@typescript-eslint/ban-ts-comment': 'warn',
       '@typescript-eslint/consistent-type-imports': [
@@ -295,8 +294,9 @@ const eslintConfig = [
       'public/**',
       '*.config.js',
       'coverage/**',
-      "next-env.d.ts",
-      "src/generated",
+      'next-env.d.ts',
+      'src/generated',
+      'prisma/seed.ts',
     ],
   },
 ];

@@ -1,6 +1,7 @@
-import React from "react";
-import type { InputHTMLAttributes, SelectHTMLAttributes, FC, ReactNode } from "react";
-import { Search as SearchIcon } from "lucide-react";
+import { Search as SearchIcon } from 'lucide-react';
+import React from 'react';
+
+import type { InputHTMLAttributes, SelectHTMLAttributes, FC, ReactNode } from 'react';
 
 type BaseProps = {
   label: string;
@@ -18,7 +19,7 @@ const Field: FC<{ label: string; children: ReactNode }> = ({ label, children }) 
   </label>
 );
 
-const InputField: FC<BaseProps & InputHTMLAttributes<HTMLInputElement>> = ({ label, error, className = "", type, ...props }) => (
+const InputField: FC<BaseProps & InputHTMLAttributes<HTMLInputElement>> = ({ label, error, className = '', type, ...props }) => (
   <Field label={label}>
     <input
       type={type}
@@ -41,7 +42,7 @@ const Date: FC<BaseProps & InputHTMLAttributes<HTMLInputElement>> = (props) => (
   <InputField type="date" {...props}/>
 );
 
-const Select: FC<BaseProps & SelectHTMLAttributes<HTMLSelectElement>> = ({ label, error, className = "", children, ...props }) => (
+const Select: FC<BaseProps & SelectHTMLAttributes<HTMLSelectElement>> = ({ label, error, className = '', children, ...props }) => (
   <Field label={label}>
     <select
       {...props}
@@ -53,7 +54,7 @@ const Select: FC<BaseProps & SelectHTMLAttributes<HTMLSelectElement>> = ({ label
   </Field>
 );
 
-const Search: FC<InputHTMLAttributes<HTMLInputElement>> = ({value, onChange, placeholder = "Search" }) => (
+const Search: FC<InputHTMLAttributes<HTMLInputElement>> = ({ value, onChange, placeholder = 'Search' }) => (
   <div className="relative w-full sm:w-72">
     <SearchIcon className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
     <input
@@ -65,7 +66,6 @@ const Search: FC<InputHTMLAttributes<HTMLInputElement>> = ({value, onChange, pla
   </div>
 );
 
-
 export const Input = {
-  Text, Number, Date, Select, Search
-}
+  Text, Number, Date, Select, Search,
+};

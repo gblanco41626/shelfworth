@@ -1,113 +1,115 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Card, Icon, IconButton } from '@/components/tokens'
-import type { Item, Store } from '@/types'
-import { useToast } from '@/hooks/use-toast'
+import { useState, useEffect } from 'react';
+
+import { Card, Icon, IconButton } from '@/components/tokens';
+import { useToast } from '@/hooks/use-toast';
+
+import type { Item, Store } from '@/types';
 
 export default function HomePage() {
-  const [outOfStock, setOutOfStock] = useState<Item[]>([])
-  const [shoppingList, setShoppingList] = useState<Item[]>([])
-  const [stores, setStores] = useState<Store[]>([])
-  const toast = useToast()
+  const [outOfStock, setOutOfStock] = useState<Item[]>([]);
+  const [shoppingList, setShoppingList] = useState<Item[]>([]);
+  const [stores, setStores] = useState<Store[]>([]);
+  const toast = useToast();
 
   const addToShoppingList = async (id: string) => {
     try {
       const response = await fetch(`/api/items/${id}/shopping-list`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ buy: true })
-      })
+        body: JSON.stringify({ buy: true }),
+      });
 
       if (response.ok) {
-        toast.success(`Item added to shopping list`)
-        fetchShoppingList()
-        fetchOutOfStock()
+        toast.success('Item added to shopping list');
+        fetchShoppingList();
+        fetchOutOfStock();
       }
     } catch (error) {
-      toast.error(`Failed to add item to shopping list`)
-      console.error('Error updating item:', error)
+      toast.error('Failed to add item to shopping list');
+      console.error('Error updating item:', error);
     }
-  }
-  
+  };
+
   const removeFromShoppingList = async (id: string) => {
     try {
       const response = await fetch(`/api/items/${id}/shopping-list`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ buy: false })
-      })
+        body: JSON.stringify({ buy: false }),
+      });
 
       if (response.ok) {
-        toast.success(`Item removed from shopping list`)
-        fetchShoppingList()
-        fetchOutOfStock()
+        toast.success('Item removed from shopping list');
+        fetchShoppingList();
+        fetchOutOfStock();
       }
     } catch (error) {
-      toast.error(`Failed to remove item from shopping list`)
-      console.error('Error updating item:', error)
+      toast.error('Failed to remove item from shopping list');
+      console.error('Error updating item:', error);
     }
-  }
+  };
 
   const addToStoreCart = async (id: string, storeId: string) => {
     try {
       const response = await fetch(`/api/items/${id}/cart`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ storeId })
-      })
+        body: JSON.stringify({ storeId }),
+      });
 
       if (response.ok) {
-        toast.success(`Item added to cart`)
-        fetchShoppingList()
-        fetchOutOfStock()
+        toast.success('Item added to cart');
+        fetchShoppingList();
+        fetchOutOfStock();
       }
     } catch (error) {
-      toast.error(`Failed to add item to cart`)
-      console.error('Error updating item:', error)
+      toast.error('Failed to add item to cart');
+      console.error('Error updating item:', error);
     }
-  }
+  };
 
   const fetchOutOfStock = async () => {
     try {
-      const response = await fetch('/api/items/out-of-stock')
+      const response = await fetch('/api/items/out-of-stock');
       if (response.ok) {
-        const items = await response.json()
-        setOutOfStock(items)
+        const items = await response.json();
+        setOutOfStock(items);
       }
     } catch (error) {
-      console.error('Error fetching out of stock items:', error)
+      console.error('Error fetching out of stock items:', error);
     }
-  }
+  };
 
   const fetchShoppingList = async () => {
     try {
-      const response = await fetch('/api/items/shopping-list')
+      const response = await fetch('/api/items/shopping-list');
       if (response.ok) {
-        const items = await response.json()
-        setShoppingList(items)
+        const items = await response.json();
+        setShoppingList(items);
       }
     } catch (error) {
-      console.error('Error fetching out of stock items:', error)
+      console.error('Error fetching out of stock items:', error);
     }
-  }
-  
+  };
+
   const fetchStores = async () => {
     try {
-      const response = await fetch('/api/stores')
+      const response = await fetch('/api/stores');
       if (response.ok) {
-        const strs = await response.json()
-        setStores(strs)
+        const strs = await response.json();
+        setStores(strs);
       }
     } catch (error) {
-      console.error('Error fetching stores:', error)
+      console.error('Error fetching stores:', error);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchOutOfStock()
-    fetchShoppingList()
-    fetchStores()
+    fetchOutOfStock();
+    fetchShoppingList();
+    fetchStores();
 
   }, []);
 
@@ -122,8 +124,7 @@ export default function HomePage() {
           <div className="text-sm text-slate-500">Your shopping list is empty.</div>
         ) : (
           <ul className="space-y-3">
-            {shoppingList.map((item) => {
-              return (
+            {shoppingList.map((item) => (
                 <li key={item.id} className="flex flex-col justify-between rounded-xl ring-1 ring-slate-200 p-3">
                   <div className='flex items-center justify-between gap-3'>
                     <p className="font-medium text-sm text-slate-800">{item.name}</p>
@@ -143,8 +144,7 @@ export default function HomePage() {
                   </div>
                   <div className='text-xs'>Costoco</div>
                 </li>
-              );
-            })}
+              ))}
           </ul>
         )}
       </Card>
@@ -168,5 +168,5 @@ export default function HomePage() {
         )}
       </Card>
     </section>
-  )
+  );
 }

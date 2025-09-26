@@ -1,5 +1,6 @@
-import React from "react";
-import type { ReactNode, FC } from "react";
+import React from 'react';
+
+import type { ReactNode, FC } from 'react';
 
 export const Table: FC<{ columns: string[]; children: ReactNode }> = ({ columns, children }) => (
   <div>

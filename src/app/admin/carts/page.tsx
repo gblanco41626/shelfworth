@@ -1,27 +1,29 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Card, Icon, IconButton } from '@/components/tokens'
-import type { Cart, Item } from '@/types'
-import { QuickPurchaseForm } from '@/components/admin/quick-purchase-form'
+import { useState, useEffect } from 'react';
+
+import { QuickPurchaseForm } from '@/components/admin/quick-purchase-form';
+import { Card, Icon } from '@/components/tokens';
+
+import type { Cart } from '@/types';
 
 export default function HomePage() {
-  const [carts, setCarts] = useState<Cart[]>([])
-  
+  const [carts, setCarts] = useState<Cart[]>([]);
+
   const fetchCarts = async () => {
     try {
-      const response = await fetch('/api/carts')
+      const response = await fetch('/api/carts');
       if (response.ok) {
-        const strs = await response.json()
-        setCarts(strs)
+        const strs = await response.json();
+        setCarts(strs);
       }
     } catch (error) {
-      console.error('Error fetching stores:', error)
+      console.error('Error fetching stores:', error);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchCarts()
+    fetchCarts();
 
   }, []);
 
@@ -31,7 +33,7 @@ export default function HomePage() {
           <Card>
             <div className="text-sm text-slate-500">All good! No carts to manage.</div>
           </Card>
-        </div>)
+        </div>);
   }
 
   return (
@@ -56,5 +58,5 @@ export default function HomePage() {
         </Card>
       ))}
     </div>
-  )
+  );
 }

@@ -1,14 +1,17 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import type { Item, Store, CreatePurchaseData } from '@/types'
-import { Input, Button } from '../tokens'
-import { formatDateForInput } from '@/lib/date-utils'
-import { formatCurrency, pricePerUnit } from '@/lib/currency-utils'
-import { useToast } from '@/hooks/use-toast'
+import { useEffect, useState } from 'react';
+
+import { useToast } from '@/hooks/use-toast';
+import { formatCurrency, pricePerUnit } from '@/lib/currency-utils';
+import { formatDateForInput } from '@/lib/date-utils';
+
+import { Input, Button } from '../tokens';
+
+import type { Item, Store, CreatePurchaseData } from '@/types';
 
 interface QuickPurchaseFormProps {
-  item: Item, 
+  item: Item,
   onSubmit: () => void
 }
 
@@ -21,46 +24,46 @@ export function QuickPurchaseForm({ item, onSubmit }: QuickPurchaseFormProps) {
     amount: 1,
     dateBought: new Date(),
     quantity: 1,
-    price: 0
-  })
+    price: 0,
+  });
 
-  const [stores, setStores] = useState<Store[]>([])
-  const toast = useToast()
+  const [stores, setStores] = useState<Store[]>([]);
+  const toast = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    handleAddPurchase(formData)
-  }
+    handleAddPurchase(formData);
+  };
 
   const handleAddPurchase = async (data: CreatePurchaseData) => {
     try {
       const response = await fetch('/api/purchases', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      })
+        body: JSON.stringify(data),
+      });
 
       if (response.ok) {
-        toast.success(`Purchase added`)
-        onSubmit()
+        toast.success('Purchase added');
+        onSubmit();
       }
     } catch (error) {
-      console.error('Error adding item:', error)
+      console.error('Error adding item:', error);
     }
-  }
+  };
 
   const fetchStores = async () => {
     try {
-      const response = await fetch('/api/stores')
+      const response = await fetch('/api/stores');
       if (response.ok) {
-        const cats = await response.json()
-        setStores(cats)
+        const cats = await response.json();
+        setStores(cats);
       }
     } catch (error) {
-      console.error('Error fetching stores:', error)
+      console.error('Error fetching stores:', error);
     }
-  }
+  };
 
   useEffect(() => {
     fetchStores();
@@ -71,8 +74,8 @@ export function QuickPurchaseForm({ item, onSubmit }: QuickPurchaseFormProps) {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Input.Text
           label="Brand"
-          value={formData.brand ?? ""}
-          onChange={(e) => setFormData((f) => ({ ...f, brand: e.target.value}))}
+          value={formData.brand ?? ''}
+          onChange={(e) => setFormData((f) => ({ ...f, brand: e.target.value }))}
           placeholder="e.g., Organic Valley"
         />
         <Input.Number
@@ -108,7 +111,7 @@ export function QuickPurchaseForm({ item, onSubmit }: QuickPurchaseFormProps) {
         </Input.Select>
         <Input.Number
           label="Price"
-          value={formData.price ?? ""}
+          value={formData.price ?? ''}
           onChange={(e) => setFormData((f) => ({ ...f, price: parseFloat(e.target.value) }))}
           required
         />
@@ -126,7 +129,7 @@ export function QuickPurchaseForm({ item, onSubmit }: QuickPurchaseFormProps) {
         </div>
         <Input.Select
           label="Store"
-          value={formData.storeId ?? ""}
+          value={formData.storeId ?? ''}
           onChange={(e) => setFormData((f) => ({ ...f, storeId: e.target.value }))}
           required
         >
@@ -140,12 +143,12 @@ export function QuickPurchaseForm({ item, onSubmit }: QuickPurchaseFormProps) {
         <Input.Date
           label="Date Bought"
           value={formatDateForInput(formData.dateBought)}
-          onChange={(e) => setFormData((f) => ({ ...f, dateBought: new Date(e.target.value)}))}
+          onChange={(e) => setFormData((f) => ({ ...f, dateBought: new Date(e.target.value) }))}
         />
         <Input.Date
           label="Expiration Date"
           value={formatDateForInput(formData.expirationDate)}
-          onChange={(e) => setFormData((f) => ({ ...f, expirationDate: new Date(e.target.value)}))}
+          onChange={(e) => setFormData((f) => ({ ...f, expirationDate: new Date(e.target.value) }))}
           className="w-full rounded-xl border-slate-300 focus:border-sky-400 focus:ring-sky-400"
         />
       </div>
@@ -154,5 +157,5 @@ export function QuickPurchaseForm({ item, onSubmit }: QuickPurchaseFormProps) {
       </div>
       <p className="text-xs text-slate-500">Adding a purchase here will also increase stock by <span className="font-semibold">quantity</span>.</p>
     </div>
-  )
+  );
 }

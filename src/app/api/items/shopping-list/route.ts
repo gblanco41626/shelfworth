@@ -1,42 +1,45 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/db'
-import { TEMP_USER_ID } from '@/lib'
+import { NextResponse } from 'next/server';
+
+import { TEMP_USER_ID } from '@/lib';
+import { db } from '@/lib/db';
+
+import type { NextRequest } from 'next/server';
 
 // GET /api/items/out-of-stock - Get all items with their purchases
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
-    const userId = TEMP_USER_ID
+    const userId = TEMP_USER_ID;
 
     const items = await db.item.findMany({
       where: {
-        userId: userId,
+        userId,
         buy: true,
-        storeId: null
+        storeId: null,
       },
       include: {
         category: true,
         purchases: {
-          include: { store: true }
-        }
+          include: { store: true },
+        },
       },
       orderBy: [
         {
           category: {
-            name: 'asc'
-          }
+            name: 'asc',
+          },
         },
         {
-          name: 'asc'
-        }
-      ]
-    })
+          name: 'asc',
+        },
+      ],
+    });
 
-    return NextResponse.json(items)
+    return NextResponse.json(items);
   } catch (error) {
-    console.error('Error fetching items:', error)
+    console.error('Error fetching items:', error);
     return NextResponse.json(
       { error: 'Failed to fetch items' },
-      { status: 500 }
-    )
+      { status: 500 },
+    );
   }
 }

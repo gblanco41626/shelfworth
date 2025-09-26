@@ -1,37 +1,38 @@
-"use client"
+'use client';
 
-import React, { useState, useEffect, useMemo } from "react";
-import { Card, Table, Icon, IconButton, Input } from "@/components/tokens"
-import { Item, CreateItemData } from "@/types";
-import { ItemForm } from "@/components/admin/item-form";
-import { QuickPurchaseForm } from "@/components/admin/quick-purchase-form";
-import { useRouter } from "next/navigation";
-import { useToast } from "@/hooks/use-toast";
+import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, useMemo } from 'react';
 
+import { ItemForm } from '@/components/admin/item-form';
+import { QuickPurchaseForm } from '@/components/admin/quick-purchase-form';
+import { Card, Table, Icon, IconButton, Input } from '@/components/tokens';
+import { useToast } from '@/hooks/use-toast';
+
+import type { Item, CreateItemData } from '@/types';
 
 export default function Items() {
-  const [items, setItems] = useState<Item[]>([])
-  const [editingItem, setEditingItem] = useState<Item | null>(null)
-  const [itemQuery, setItemQuery] = useState<string>("");
+  const [items, setItems] = useState<Item[]>([]);
+  const [editingItem, setEditingItem] = useState<Item | null>(null);
+  const [itemQuery, setItemQuery] = useState<string>('');
   const router = useRouter();
   const toast = useToast();
 
   // Fetch data on component mount
   useEffect(() => {
-    fetchItems()
-  }, [])
+    fetchItems();
+  }, []);
 
   const fetchItems = async () => {
     try {
-      const response = await fetch('/api/items')
+      const response = await fetch('/api/items');
       if (response.ok) {
-        const items = await response.json()
-        setItems(items)
+        const items = await response.json();
+        setItems(items);
       }
     } catch (error) {
-      console.error('Error fetching items:', error)
+      console.error('Error fetching items:', error);
     }
-  }
+  };
 
   // Item handlers
   const handleAddItem = async (data: CreateItemData) => {
@@ -39,94 +40,94 @@ export default function Items() {
       const response = await fetch('/api/items', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      })
+        body: JSON.stringify(data),
+      });
 
       if (response.ok) {
-        fetchItems()
+        fetchItems();
         const createdItem = await response.json();
         setEditingItem(createdItem);
-        toast.success(`Item ${data.name} added`)
+        toast.success(`Item ${data.name} added`);
       }
     } catch (error) {
-      toast.error(`Failed to add item ${data.name}`)
-      console.error('Error adding item:', error)
+      toast.error(`Failed to add item ${data.name}`);
+      console.error('Error adding item:', error);
     }
-  }
+  };
 
   const handleUpdateItem = async (data: CreateItemData) => {
-    if (!editingItem) return
+    if (!editingItem) return;
 
     try {
       const response = await fetch(`/api/items/${editingItem.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      })
+        body: JSON.stringify(data),
+      });
 
       if (response.ok) {
-        fetchItems()
-        setEditingItem(null)
-        toast.success(`Item ${data.name} updated`)
+        fetchItems();
+        setEditingItem(null);
+        toast.success(`Item ${data.name} updated`);
       }
     } catch (error) {
-      toast.error(`Failed to update item ${data.name}`)
-      console.error('Error updating item:', error)
+      toast.error(`Failed to update item ${data.name}`);
+      console.error('Error updating item:', error);
     }
-  }
+  };
 
   const handleDeleteItem = async (id: string) => {
-    if (!confirm('Are you sure? This will also delete all purchases for this item.')) return
+    if (!confirm('Are you sure? This will also delete all purchases for this item.')) return;
 
     try {
       const response = await fetch(`/api/items/${id}`, {
-        method: 'DELETE'
-      })
+        method: 'DELETE',
+      });
 
       if (response.ok) {
-        fetchItems()
-        setEditingItem(null)
-        toast.success(`Item deleted`)
+        fetchItems();
+        setEditingItem(null);
+        toast.success('Item deleted');
       }
     } catch (error) {
-      toast.error(`Failed to delete item`)
-      console.error('Error deleting item:', error)
+      toast.error('Failed to delete item');
+      console.error('Error deleting item:', error);
     }
-  }
+  };
 
   const handleZeroOutStock = async (id: string) => {
     try {
       const response = await fetch(`/api/items/${id}/zero-out-stock`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' }
-      })
+        headers: { 'Content-Type': 'application/json' },
+      });
 
       if (response.ok) {
-        fetchItems()
+        fetchItems();
       }
     } catch (error) {
-      console.error('Error updating item:', error)
+      console.error('Error updating item:', error);
     }
-  }
+  };
 
   const addToShoppingList = async (id: string) => {
     try {
       const response = await fetch(`/api/items/${id}/shopping-list`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ buy: true })
-      })
+        body: JSON.stringify({ buy: true }),
+      });
 
       if (response.ok) {
-        toast.success(`Item added to shopping list`)
-        fetchItems()
+        toast.success('Item added to shopping list');
+        fetchItems();
       }
     } catch (error) {
-      toast.error(`Failed to add item to shopping list`)
-      console.error('Error updating item:', error)
+      toast.error('Failed to add item to shopping list');
+      console.error('Error updating item:', error);
     }
-  }
-  
+  };
+
   const filtered = useMemo(() => (
       items.filter((i) => {
         const q = itemQuery.trim().toLowerCase();
@@ -138,11 +139,11 @@ export default function Items() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <Card title={editingItem ? "Edit Item" : "New Item"} icon={<Icon.Item />}> 
+      <Card title={editingItem ? 'Edit Item' : 'New Item'} icon={<Icon.Item />}>
         <ItemForm
           onSubmit={editingItem ? handleUpdateItem : handleAddItem}
           onCancel={() => {
-            setEditingItem(null)
+            setEditingItem(null);
           }}
           initialData={editingItem || undefined}
           isEditing={!!editingItem}
@@ -150,8 +151,8 @@ export default function Items() {
         {editingItem && (
           <QuickPurchaseForm item={editingItem}
             onSubmit={() => {
-              setEditingItem(null)
-              fetchItems()
+              setEditingItem(null);
+              fetchItems();
             }}
           />
         )}
@@ -167,7 +168,7 @@ export default function Items() {
             placeholder="Search items"
           />
         }
-      > 
+      >
               {/* Mobile list */}
         <div className="sm:hidden">
           {filtered.length === 0 ? (
@@ -175,7 +176,7 @@ export default function Items() {
           ) : (
             <ul className="space-y-3">
               {filtered.map((i) => {
-                const catName = i.category?.name || 'Uncategorized'
+                const catName = i.category?.name || 'Uncategorized';
                 return (
                   <li key={i.id} className="rounded-xl ring-1 ring-slate-200 p-3">
                     <div className="flex items-start justify-between gap-3">
@@ -206,7 +207,7 @@ export default function Items() {
           )}
         </div>
         <div className="hidden sm:block">
-          <Table columns={["Name", "Stock", "Category", "Actions"]}>
+          <Table columns={['Name', 'Stock', 'Category', 'Actions']}>
             {filtered.map((i) => (
               <tr key={i.id} className="hover:bg-slate-50/50">
                 <td className="px-4 py-2 text-sm text-slate-700">{i.name}</td>

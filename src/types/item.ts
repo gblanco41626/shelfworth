@@ -1,6 +1,7 @@
-import type { Category } from './category'
-import type { Purchase } from './purchase'
-import { Prisma } from '@prisma/client'
+
+import type { Category } from './category';
+import type { Purchase } from './purchase';
+import type { Prisma } from '@prisma/client';
 
 export interface Item {
   id: string
