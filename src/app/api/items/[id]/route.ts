@@ -1,86 +1,56 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/db'
-import type { UpdateItemData } from '@/types'
+import { NextResponse } from 'next/server';
 
-// GET /api/items/[id] - Get specific item
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: Promise<{ id: string; }> }
-) {
-  try {
-    const { id } = await params
+import { withApiAuth } from '@/lib/api-auth';
+import { db } from '@/lib/db';
 
-    const item = await db.item.findUnique({
-      where: { id },
-      include: { category: true }
-    })
+import type { Item } from '@/types';
 
-    if (!item) {
-      return NextResponse.json(
-        { error: 'item not found' },
-        { status: 404 }
-      )
-    }
+export const GET = withApiAuth(async ({ user, params }) => {
+  const { id } = await params as { id: string };
 
-    return NextResponse.json(item)
-  } catch (error) {
-    console.error('Error fetching item:', error)
+  const item = await db.item.findUnique({
+    where: { id, userId: user.id },
+    include: { category: true },
+  });
+
+  if (!item) {
     return NextResponse.json(
-      { error: 'Failed to fetch item' },
-      { status: 500 }
-    )
+      { error: 'item not found' },
+      { status: 404 },
+    );
   }
-}
 
-// PUT /api/items/[id] - Update item
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string; }> }
-) {
-  try {
-    const { id } = await params
+  return NextResponse.json(item);
+});
 
-    const body: UpdateItemData = await request.json()
-    const { name, stock, categoryId } = body
+export const PUT = withApiAuth(async ({ user, request, params }) => {
+  const { id } = await params as { id: string };
 
-    const item = await db.item.update({
-      where: { id },
-      data: {
-        ...(name && { name }),
-        stock,
-        ...(categoryId !== undefined && { categoryId: categoryId || null })
-      },
-      include: { category: true }
-    })
+  const body: Partial<Item> = await request.json();
+  const { name, stock, categoryId, buy, storeId, stockIncrement } = body;
 
-    return NextResponse.json(item)
-  } catch (error) {
-    console.error('Error updating item:', error)
-    return NextResponse.json(
-      { error: 'Failed to update item' },
-      { status: 500 }
-    )
-  }
-}
+  const item = await db.item.update({
+    where: { id, userId: user.id },
+    data: {
+      ...(name && { name }),
+      ...(stock !== undefined && { stock }),
+      ...(buy !== undefined && { buy }),
+      ...(categoryId !== undefined && { categoryId: categoryId || null }),
+      ...(storeId !== undefined && { storeId: storeId || null }),
+      ...(stockIncrement && { stock: { increment: stockIncrement } }),
+    },
+    include: { category: true },
+  });
 
-// DELETE /api/items/[id] - Delete item
-export async function DELETE(
-  _request: NextRequest,
-  { params }: { params: Promise<{ id: string; }> }
-) {
-  try {
-    const { id } = await params
+  return NextResponse.json(item);
+});
 
-    await db.item.delete({
-      where: { id }
-    })
+export const DELETE = withApiAuth(async ({ user, params }) => {
+  const { id } = await params as { id: string };
 
-    return NextResponse.json({ message: 'item deleted successfully' })
-  } catch (error) {
-    console.error('Error deleting item:', error)
-    return NextResponse.json(
-      { error: 'Failed to delete item' },
-      { status: 500 }
-    )
-  }
-}
+  await db.item.delete({
+    where: { id, userId: user.id },
+  });
+
+  return NextResponse.json({ delete: true });
+});

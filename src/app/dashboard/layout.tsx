@@ -1,7 +1,8 @@
-"use client"
+'use client';
 
-import React from "react";
-import NavShell from "@/components/nav-shell";
+import React from 'react';
+
+import NavShell from '@/components/nav-shell';
 
 export default function AdminLayout({
   children,

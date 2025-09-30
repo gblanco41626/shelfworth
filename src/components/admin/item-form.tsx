@@ -1,13 +1,17 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import type { Category, CreateItemData } from '@/types'
-import { Input, Button } from '../tokens'
+import { useEffect, useState, useCallback } from 'react';
+
+import { useCategoryApi } from '@/hooks/api';
+
+import { Input, Button } from '../tokens';
+
+import type { Category, Item } from '@/types';
 
 interface ItemFormProps {
-  onSubmit: (data: CreateItemData) => void
+  onSubmit: (data: Partial<Item>) => void
   onCancel?: () => void
-  initialData?: Partial<CreateItemData>
+  initialData?: Partial<Item>
   isEditing?: boolean
 }
 
@@ -15,43 +19,35 @@ export function ItemForm({
   onSubmit,
   onCancel,
   initialData,
-  isEditing = false
+  isEditing = false,
 }: ItemFormProps) {
-  const [formData, setFormData] = useState<CreateItemData>({
+  const [formData, setFormData] = useState<Partial<Item>>({
     name: '',
     stock: 0,
-    categoryId: ''
-  })
-  const [categories, setCategories] = useState<Category[]>([])
+    categoryId: '',
+  });
+  const [categories, setCategories] = useState<Category[]>([]);
+  const catApi = useCategoryApi();
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    onSubmit(formData)
-  }
-  
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch('/api/categories')
-      if (response.ok) {
-        const cats = await response.json()
-        setCategories(cats)
-      }
-    } catch (error) {
-      console.error('Error fetching categories:', error)
-    }
-  }
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchCategories = useCallback(async () => setCategories(await catApi.getCategories()), []);
 
   useEffect(() => {
     setFormData({
       name: initialData?.name || '',
       stock: initialData?.stock || 0,
-      categoryId: initialData?.categoryId || ''
-    })
+      categoryId: initialData?.categoryId || '',
+    });
   }, [initialData]);
 
   useEffect(() => {
-    fetchCategories()
-  }, []);
+    fetchCategories();
+  }, [fetchCategories]);
 
   return (
     <div>
@@ -69,7 +65,7 @@ export function ItemForm({
           required
         />
         <Input.Select label="Category"
-          value={formData.categoryId ?? ""}
+          value={formData.categoryId ?? ''}
           onChange={(e) => setFormData((f) => ({ ...f, categoryId: e.target.value || undefined }))}
         >
           <option value="">Uncategorized</option>
@@ -85,9 +81,9 @@ export function ItemForm({
               Cancel
             </Button>
           )}
-          <Button type="submit">{isEditing ? "Save Changes" : "Add Item"}</Button>
+          <Button type="submit">{isEditing ? 'Save Changes' : 'Add Item'}</Button>
         </div>
       </form>
     </div>
-  )
+  );
 }

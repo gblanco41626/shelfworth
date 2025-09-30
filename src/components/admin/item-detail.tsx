@@ -1,17 +1,20 @@
-"use client";
+'use client';
 
-import { useMemo, useState } from "react";
-import PriceSparkline from "@/components/price-spark-line";
-import { LineChart } from "lucide-react";
-import { formatDateForDisplay } from "@/lib/date-utils";
-import { formatCurrency, pricePerUnit } from "@/lib/currency-utils";
-import type { Purchase, PurchaseWithRelations, Store } from "@/types";
-import { Icon } from "../tokens";
+import { LineChart } from 'lucide-react';
+import { useMemo, useState } from 'react';
+
+import PriceSparkline from '@/components/price-spark-line';
+import { formatCurrency, pricePerUnit } from '@/lib/currency-utils';
+import { formatDateForDisplay } from '@/lib/date-utils';
+
+import { Icon } from '../tokens';
+
+import type { Purchase, PurchaseWithRelations, Store } from '@/types';
 
 function latestByStore(purchases: Purchase[] | PurchaseWithRelations[]) {
   const map = new Map<string, Purchase | PurchaseWithRelations>();
   for (const p of purchases) {
-    const k = p.storeId ?? "__none__";
+    const k = p.storeId ?? '__none__';
     const time = new Date(p.dateBought ?? p.createdAt).getTime();
     const prev = map.get(k);
     const prevTime = prev ? new Date(prev.dateBought ?? prev.createdAt).getTime() : -Infinity;
@@ -27,16 +30,16 @@ export default function ItemDetail({
   purchases: Purchase[] | PurchaseWithRelations[];
   stores: Store[] | [];
 }) {
-  const [storeFilter, setStoreFilter] = useState<string>("all");
+  const [storeFilter, setStoreFilter] = useState<string>('all');
 
   const storeOptions = useMemo(
-    () => [{ id: "all", name: "All stores" }, ...stores],
-    [stores]
+    () => [{ id: 'all', name: 'All stores' }, ...stores],
+    [stores],
   );
 
   const filtered = useMemo(
-    () => purchases.filter((p) => (storeFilter === "all" ? true : p.storeId === storeFilter)),
-    [purchases, storeFilter]
+    () => purchases.filter((p) => (storeFilter === 'all' ? true : p.storeId === storeFilter)),
+    [purchases, storeFilter],
   );
 
   const sparkPoints = useMemo(() => {
@@ -50,7 +53,7 @@ export default function ItemDetail({
 
   const latest = useMemo(() => {
     const all = latestByStore(purchases);
-    return storeFilter === "all" ? all : all.filter((p) => p.storeId === storeFilter);
+    return storeFilter === 'all' ? all : all.filter((p) => p.storeId === storeFilter);
   }, [purchases, storeFilter]);
 
   return (
@@ -93,7 +96,7 @@ export default function ItemDetail({
                   Max: <b>{formatCurrency(Math.max(...filtered.map((p) => p.price)))}</b>
                 </span>
                 <span>
-                  Last:{" "}
+                  Last:{' '}
                   <b>
                     {formatCurrency(filtered[filtered.length - 1].price)} (
                     {formatCurrency(pricePerUnit(filtered[filtered.length - 1]))}/
@@ -115,12 +118,12 @@ export default function ItemDetail({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {latest.map((purchase) => (
-            <div key={purchase.storeId ?? "none"} className="rounded-2xl bg-white ring-1 ring-slate-200 p-4">
+            <div key={purchase.storeId ?? 'none'} className="rounded-2xl bg-white ring-1 ring-slate-200 p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Icon.Purchase />
                   <p className="text-sm font-medium text-slate-800">
-                    {purchase.store?.name ?? "—"}
+                    {purchase.store?.name ?? '—'}
                   </p>
                 </div>
                 <p className="text-sm text-slate-500">{formatDateForDisplay(purchase.dateBought)}</p>
@@ -129,7 +132,7 @@ export default function ItemDetail({
               <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
                 <div>
                   <p className="text-slate-500">Brand</p>
-                  <p className="font-medium text-slate-800">{purchase.brand || "—"}</p>
+                  <p className="font-medium text-slate-800">{purchase.brand || '—'}</p>
                 </div>
                 <div>
                   <p className="text-slate-500">Unit</p>
@@ -186,8 +189,8 @@ export default function ItemDetail({
                 .map((p) => (
                   <tr key={p.id} className="hover:bg-slate-50/60">
                     <td className="px-4 py-2 text-sm text-slate-700">{formatDateForDisplay(p.dateBought ?? p.createdAt)}</td>
-                    <td className="px-4 py-2 text-sm text-slate-700">{p.store?.name ?? "—"}</td>
-                    <td className="px-4 py-2 text-sm text-slate-700">{p.brand || "—"}</td>
+                    <td className="px-4 py-2 text-sm text-slate-700">{p.store?.name ?? '—'}</td>
+                    <td className="px-4 py-2 text-sm text-slate-700">{p.brand || '—'}</td>
                     <td className="px-4 py-2 text-sm text-slate-700">
                       {p.amount} {p.unit}
                     </td>

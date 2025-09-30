@@ -1,7 +1,8 @@
 // SUBTAB (icons-only on small; labels visible from sm+)
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import type { LucideIcon } from "lucide-react";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+
+import type { LucideIcon } from 'lucide-react';
 
 export type SubTab = { href: string; label: string; icon: LucideIcon };
 
@@ -12,7 +13,7 @@ export function SubTabBar({ subTabs = [] }: { subTabs: SubTab[] }) {
   return (
     <div
       className="sticky z-40 bg-white/80 backdrop-blur border-b border-slate-200"
-      style={{ top: "var(--main-nav-h,56px)" }} // sits right under main nav
+      style={{ top: 'var(--main-nav-h,56px)' }} // sits right under main nav
       role="navigation"
       aria-label="Section navigation"
     >
@@ -27,11 +28,11 @@ export function SubTabBar({ subTabs = [] }: { subTabs: SubTab[] }) {
                 title={label}
                 aria-label={label}
                 className={[
-                  "inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                  'inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                   active
-                    ? "bg-sky-50 text-sky-700"
-                    : "text-slate-700 hover:bg-slate-100 hover:text-slate-900",
-                ].join(" ")}
+                    ? 'bg-sky-50 text-sky-700'
+                    : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900',
+                ].join(' ')}
               >
                 <Icon className="h-4 w-4" />
                 <span className="hidden sm:inline">{label}</span>

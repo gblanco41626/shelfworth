@@ -1,97 +1,61 @@
-"use client"
+'use client';
 
-import React, { useState, useEffect } from "react";
-import { Card, Table, Icon, IconButton } from "@/components/tokens";
-import { Category, CreateCategoryData } from "@/types";
-import { CategoryForm } from "@/components/admin/category-form";
+import React, { useState, useEffect, useCallback } from 'react';
+
+import { CategoryForm } from '@/components/admin/category-form';
+import { Card, Table, Icon, IconButton } from '@/components/tokens';
+import { useCategoryApi } from '@/hooks/api';
+
+import type { Category } from '@/types';
 
 export default function Categories() {
-  const [categories, setCategories] = useState<Category[]>([])
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null)
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const catApi = useCategoryApi();
 
-  useEffect(() => {
-    fetchCategories()
-  }, [])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchCategories = useCallback(async () => setCategories(await catApi.getCategories()), []);
 
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch('/api/categories')
-      if (response.ok) {
-        const cats = await response.json()
-        setCategories(cats)
-      }
-    } catch (error) {
-      console.error('Error fetching categories:', error)
-    }
-  }
+  const handleAddCategory = async (data: Partial<Category>) => {
+    await catApi.createCategory(data);
+    fetchCategories();
+  };
 
-  const handleAddCategory = async (data: CreateCategoryData) => {
-    try {
-      const response = await fetch('/api/categories', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      })
+  const handleUpdateCategory = async (data: Partial<Category>) => {
+    if (!editingCategory) return;
 
-      if (response.ok) {
-        fetchCategories()
-      }
-    } catch (error) {
-      console.error('Error adding category:', error)
-    }
-  }
-
-  const handleUpdateCategory = async (data: CreateCategoryData) => {
-    if (!editingCategory) return
-
-    try {
-      const response = await fetch(`/api/categories/${editingCategory.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      })
-
-      if (response.ok) {
-        fetchCategories()
-        setEditingCategory(null)
-        // setFormMode('none')
-      }
-    } catch (error) {
-      console.error('Error updating category:', error)
-    }
-  }
+    await catApi.updateCategory(editingCategory.id, data);
+    fetchCategories();
+    setEditingCategory(null);
+  };
 
   const handleDeleteCategory = async (id: string) => {
-    if (!confirm('Are you sure? This will also delete all purchases for this category.')) return
+    // eslint-disable-next-line no-alert
+    if (!confirm('Are you sure? This will also delete all purchases for this category.')) return;
 
-    try {
-      const response = await fetch(`/api/categories/${id}`, {
-        method: 'DELETE'
-      })
+    await catApi.deleteCategory(id);
+    fetchCategories();
+  };
 
-      if (response.ok) {
-        fetchCategories()
-      }
-    } catch (error) {
-      console.error('Error deleting category:', error)
-    }
-  }
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <Card title={editingCategory ? "Edit Category" : "New Category"} icon={<Icon.Category />}> 
+      <Card title={editingCategory ? 'Edit Category' : 'New Category'} icon={<Icon.Category />}>
         <CategoryForm
           onSubmit={editingCategory ? handleUpdateCategory : handleAddCategory}
           onCancel={() => {
-            setEditingCategory(null)
+            setEditingCategory(null);
           }}
           initialData={editingCategory || undefined}
           isEditing={!!editingCategory}
         />
       </Card>
 
-      <Card title="Categories" icon={<Icon.Category />}> 
-        <Table columns={["Name", "Actions"]}>
+      <Card title="Categories" icon={<Icon.Category />}>
+        <Table columns={['Name', 'Actions']}>
           {categories.map((i) => (
             <tr key={i.id} className="hover:bg-slate-50/50">
               <td className="px-4 py-2 text-sm text-slate-700">{i.name}</td>

@@ -1,103 +1,66 @@
-"use client"
+'use client';
 
-import React, { useState, useEffect } from "react";
-import { Card, Table, Icon, IconButton, Input } from "@/components/tokens"
-import { Purchase, CreatePurchaseData } from "@/types";
-import { PurchaseForm } from "@/components/admin/purchase-form";
-import { formatDateForDisplay } from "@/lib/date-utils";
-import { formatCurrency, pricePerUnit } from "@/lib/currency-utils";
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+
+import { PurchaseForm } from '@/components/admin/purchase-form';
+import { Card, Table, Icon, IconButton, Input } from '@/components/tokens';
+import { usePurchaseApi } from '@/hooks/api';
+import { formatCurrency, pricePerUnit } from '@/lib/currency-utils';
+import { formatDateForDisplay } from '@/lib/date-utils';
+
+import type { Purchase } from '@/types';
 
 export default function Purchases() {
-  const [purchases, setPurchases] = useState<Purchase[]>([])
-  const [editingPurchase, setEditingPurchase] = useState<Purchase | null>(null)
-  const [purchaseQuery, setPurchaseQuery] = useState<string>("");
+  const [purchases, setPurchases] = useState<Purchase[]>([]);
+  const [editingPurchase, setEditingPurchase] = useState<Purchase | null>(null);
+  const [purchaseQuery, setPurchaseQuery] = useState<string>('');
+  const purchaseApi = usePurchaseApi();
 
-  // Fetch data on component mount
-  useEffect(() => {
-    fetchPurchases()
-  }, [])
-
-  const fetchPurchases = async () => {
-    try {
-      const response = await fetch('/api/purchases')
-      if (response.ok) {
-        const purchases = await response.json()
-        setPurchases(purchases)
-      }
-    } catch (error) {
-      console.error('Error fetching purchases:', error)
-    }
-  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchPurchases = useCallback(async () => setPurchases(await purchaseApi.getPurchases()), []);
 
   // Purchase handlers
-  const handleAddPurchase = async (data: CreatePurchaseData) => {
-    try {
-      const response = await fetch('/api/purchases', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      })
+  const handleAddPurchase = async (data: Partial<Purchase>) => {
+    await purchaseApi.createPurchase(data);
+    fetchPurchases();
+  };
 
-      if (response.ok) {
-        fetchPurchases()
-        const createdPurchase = await response.json();
-        setEditingPurchase(createdPurchase);
-      }
-    } catch (error) {
-      console.error('Error adding purchase:', error)
-    }
-  }
+  const handleUpdatePurchase = async (data: Partial<Purchase>) => {
+    if (!editingPurchase) return;
 
-  const handleUpdatePurchase = async (data: CreatePurchaseData) => {
-    if (!editingPurchase) return
-
-    try {
-      const response = await fetch(`/api/purchases/${editingPurchase.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      })
-
-      if (response.ok) {
-        fetchPurchases()
-        setEditingPurchase(null)
-      }
-    } catch (error) {
-      console.error('Error updating purchase:', error)
-    }
-  }
+    await purchaseApi.updatePurchase(editingPurchase.id, data);
+    fetchPurchases();
+    setEditingPurchase(null);
+  };
 
   const handleDeletePurchase = async (id: string) => {
-    if (!confirm('Are you sure?')) return
+    // eslint-disable-next-line no-alert
+    if (!confirm('Are you sure?')) return;
 
-    try {
-      const response = await fetch(`/api/purchases/${id}`, {
-        method: 'DELETE'
-      })
+    await purchaseApi.deletePurchase(id);
+    fetchPurchases();
+  };
 
-      if (response.ok) {
-        fetchPurchases()
-        setEditingPurchase(null)
-      }
-    } catch (error) {
-      console.error('Error deleting purchase:', error)
-    }
-  }
+  const filtered = useMemo(() => (
+    purchases.filter((i) => {
+      const q = purchaseQuery.trim().toLowerCase();
+      if (!q) return true;
+      const name = i.item?.name.toLowerCase();
+      return name?.includes(q);
+    })
+  ), [purchases, purchaseQuery]);
 
-  const filteredPurchases = purchases.filter((i) => {
-    const q = purchaseQuery.trim().toLowerCase();
-    if (!q) return true;
-    const name = i.item?.name.toLowerCase();
-    return name?.includes(q);
-  });
+  useEffect(() => {
+    fetchPurchases();
+  }, [fetchPurchases]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <Card title={editingPurchase ? "Edit Purchase" : "New Purchase"} icon={<Icon.Purchase />}> 
+      <Card title={editingPurchase ? 'Edit Purchase' : 'New Purchase'} icon={<Icon.Purchase />}>
         <PurchaseForm
           onSubmit={editingPurchase ? handleUpdatePurchase : handleAddPurchase}
           onCancel={() => {
-            setEditingPurchase(null)
+            setEditingPurchase(null);
           }}
           initialData={editingPurchase || undefined}
           isEditing={!!editingPurchase}
@@ -114,15 +77,14 @@ export default function Purchases() {
             placeholder="Search purchases"
           />
         }
-      > 
+      >
         {/* Mobile list */}
         <div className="sm:hidden">
-          {filteredPurchases.length === 0 ? (
+          {filtered.length === 0 ? (
             <div className="px-4 py-6 text-sm text-slate-500">No matching purchases.</div>
           ) : (
             <ul className="space-y-3">
-              {filteredPurchases.map((i) => {
-                return (
+              {filtered.map((i) => (
                   <li key={i.id} className="rounded-xl ring-1 ring-slate-200 p-3">
                     <div className="flex purchases-start justify-between gap-3">
                       <div>
@@ -149,25 +111,24 @@ export default function Purchases() {
                       </div>
                       <div>
                         <p className="uppercase tracking-wide text-slate-400">$/Unit</p>
-                        <p className="mt-0.5">{`${formatCurrency(pricePerUnit(i),)}`}</p>
+                        <p className="mt-0.5">{`${formatCurrency(pricePerUnit(i))}`}</p>
                       </div>
                     </div>
                   </li>
-                );
-              })}
+                ))}
             </ul>
           )}
         </div>
         <div className="hidden sm:block">
-          <Table columns={["Item", "Store", "Date", "Price", "$/Unit", "Actions"]}>
-            {filteredPurchases.map((i) => (
+          <Table columns={['Item', 'Store', 'Date', 'Price', '$/Unit', 'Actions']}>
+            {filtered.map((i) => (
               <tr key={i.id} className="hover:bg-slate-50/50">
                 <td className="px-4 py-2 text-sm text-slate-700">{i.item?.name}</td>
                 <td className="px-4 py-2 text-xs text-slate-700">{i.store?.name}</td>
                 <td className="px-4 py-2 text-xs text-slate-500">{formatDateForDisplay(i.dateBought)}</td>
                 <td className="px-4 py-2 text-sm tabular-nums">{formatCurrency(i.price)}</td>
                 <td className="px-4 py-2 text-sm tabular-nums">
-                  <p>{formatCurrency(pricePerUnit(i),)}</p>
+                  <p>{formatCurrency(pricePerUnit(i))}</p>
                   <p className="text-xs">/{i.unit}</p>
                 </td>
                 <td className="px-4 py-2">

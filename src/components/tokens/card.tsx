@@ -1,5 +1,6 @@
-import React from "react";
-import type { ReactNode, FC } from "react";
+import React from 'react';
+
+import type { ReactNode, FC } from 'react';
 
 export const Card: FC<{ title?: string; icon?: ReactNode; actions?: ReactNode; children: ReactNode }> = ({ title, icon, actions, children }) => (
   <div className="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">

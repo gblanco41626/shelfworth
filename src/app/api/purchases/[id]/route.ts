@@ -1,103 +1,70 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/db'
-import type { UpdatePurchaseData } from '@/types'
+import { NextResponse } from 'next/server';
 
-// GET /api/purchases/[id] - Get specific purchase
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: Promise<{ id: string; }> }
-) {
-  try {
-    const { id } = await params
+import { withApiAuth } from '@/lib/api-auth';
+import { db } from '@/lib/db';
+
+import type { Purchase } from '@/types';
+
+export const GET = withApiAuth(async ({ user, params }) => {
+    const { id } = await params as { id: string };
 
     const purchase = await db.purchase.findUnique({
-      where: { id },
+      where: { id, userId: user.id },
       include: {
         item: { include: { category: true } },
-        store: true
-      }
-    })
+        store: true,
+      },
+    });
 
     if (!purchase) {
       return NextResponse.json(
         { error: 'Grocery item not found' },
-        { status: 404 }
-      )
+        { status: 404 },
+      );
     }
 
-    return NextResponse.json(purchase)
-  } catch (error) {
-    console.error('Error fetching purchase:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch purchase' },
-      { status: 500 }
-    )
-  }
-}
+    return NextResponse.json(purchase);
+});
 
-// PUT /api/purchases/[id] - Update purchase
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string; }> }
-) {
-  try {
-    const { id } = await params
+export const PUT = withApiAuth(async ({ user, request, params }) => {
+  const { id } = await params as { id: string };
 
-    const body: UpdatePurchaseData = await request.json()
-    const { 
-      brand, unit, amount, dateBought, 
-      expirationDate, quantity, storeName, price 
-    } = body
+  const body: Partial<Purchase> = await request.json();
+  const {
+    brand, unit, amount, dateBought,
+    expirationDate, quantity, storeName, price,
+  } = body;
 
-    const purchase = await db.purchase.update({
-      where: { id },
-      data: {
-        ...(brand !== undefined && { brand }),
-        ...(unit && { unit }),
-        ...(amount !== undefined && { amount: parseFloat(amount.toString()) }),
-        ...(dateBought !== undefined && { 
-          dateBought: dateBought ? new Date(dateBought) : null 
-        }),
-        ...(expirationDate !== undefined && { 
-          expirationDate: expirationDate ? new Date(expirationDate) : null 
-        }),
-        ...(quantity !== undefined && { quantity: parseInt(quantity.toString()) }),
-        ...(storeName !== undefined && { storeName }),
-        ...(price !== undefined && { price: parseFloat(price.toString()) })
-      },
-      include: { 
-        item: { include: { category: true } }
-      }
-    })
+  const purchase = await db.purchase.update({
+    where: { id, userId: user.id },
+    data: {
+      ...(brand !== undefined && { brand }),
+      ...(unit && { unit }),
+      ...(amount !== undefined && { amount: parseFloat(amount.toString()) }),
+      ...(dateBought !== undefined && {
+        dateBought: dateBought ? new Date(dateBought) : null,
+      }),
+      ...(expirationDate !== undefined && {
+        expirationDate: expirationDate ? new Date(expirationDate) : null,
+      }),
+      ...(quantity !== undefined && { quantity: parseInt(quantity.toString()) }),
+      ...(storeName !== undefined && { storeName }),
+      ...(price !== undefined && { price: parseFloat(price.toString()) }),
+    },
+    include: {
+      item: { include: { category: true } },
+    },
+  });
 
-    return NextResponse.json(purchase)
-  } catch (error) {
-    console.error('Error updating purchase:', error)
-    return NextResponse.json(
-      { error: 'Failed to update purchase' },
-      { status: 500 }
-    )
-  }
-}
+  return NextResponse.json(purchase);
+});
 
-// DELETE /api/purchases/[id] - Delete purchase
-export async function DELETE(
-  _request: NextRequest,
-  { params }: { params: Promise<{ id: string; }> }
-) {
-  try {
-    const { id } = await params
+export const DELETE = withApiAuth(async ({ user, params }) => {
+  const { id } = await params as { id: string };
 
-    await db.purchase.delete({
-      where: { id }
-    })
+  await db.purchase.delete({
+    where: { id, userId: user.id },
+  });
 
-    return NextResponse.json({ message: 'Grocery item deleted successfully' })
-  } catch (error) {
-    console.error('Error deleting purchase:', error)
-    return NextResponse.json(
-      { error: 'Failed to delete purchase' },
-      { status: 500 }
-    )
-  }
-}
+  return NextResponse.json({ deleted: true });
+});

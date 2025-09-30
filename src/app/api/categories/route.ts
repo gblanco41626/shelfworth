@@ -1,55 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/db'
-import type { CreateCategoryData } from '@/types'
-import { TEMP_USER_ID } from '@/lib'
+import { NextResponse } from 'next/server';
 
-// GET /api/categories - Get all categories for user
-export async function GET(request: NextRequest) {
-  try {
-    // For MVP, we'll use a hardcoded userId
-    const userId = TEMP_USER_ID
+import { withApiAuth } from '@/lib/api-auth';
+import { db } from '@/lib/db';
 
-    const categories = await db.category.findMany({
-      where: { userId },
-      orderBy: { name: 'asc' }
-    })
+import type { Category } from '@/types';
 
-    return NextResponse.json(categories)
-  } catch (error) {
-    console.error('Error fetching categories:', error)
+export const GET = withApiAuth(async ({ user }) => {
+  const categories = await db.category.findMany({
+    where: { userId: user.id },
+    orderBy: { name: 'asc' },
+  });
+
+  return NextResponse.json(categories);
+});
+
+export const POST = withApiAuth(async ({ user, request }) => {
+  const body: Partial<Category> = await request.json();
+  const { name } = body;
+
+  if (!name) {
     return NextResponse.json(
-      { error: 'Failed to fetch categories' },
-      { status: 500 }
-    )
+      { error: 'Category name is required' },
+      { status: 400 },
+    );
   }
-}
 
-// POST /api/categories - Create new category
-export async function POST(request: NextRequest) {
-  try {
-    const body: CreateCategoryData = await request.json()
-    const { name } = body
+  const category = await db.category.create({
+    data: { name, userId: user.id },
+  });
 
-    if (!name) {
-      return NextResponse.json(
-        { error: 'Category name is required' },
-        { status: 400 }
-      )
-    }
-
-    // For MVP, we'll use a hardcoded userId
-    const userId = TEMP_USER_ID
-
-    const category = await db.category.create({
-      data: { name, userId }
-    })
-
-    return NextResponse.json(category, { status: 201 })
-  } catch (error) {
-    console.error('Error creating category:', error)
-    return NextResponse.json(
-      { error: 'Failed to create category' },
-      { status: 500 }
-    )
-  }
-}
+  return NextResponse.json(category, { status: 201 });
+});

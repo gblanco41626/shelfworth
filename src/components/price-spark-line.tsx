@@ -1,13 +1,13 @@
 // components/charts/PriceSparkline.tsx
-"use client";
+'use client';
 
-import React from "react";
+import React from 'react';
 
 export default function PriceSparkline({
   points,
   width = 420,
   height = 80,
-  className = "",
+  className = '',
 }: {
   points: number[];
   width?: number;
@@ -39,8 +39,8 @@ export default function PriceSparkline({
   const d =
     coords.length === 1
       ? `M0 ${coords[0][1]} H${width}`
-      : `M${coords[0][0]} ${coords[0][1]} ` +
-        coords.slice(1).map(([x, y]) => `L${x} ${y}`).join(" ");
+      : `M${coords[0][0]} ${coords[0][1]} ${
+        coords.slice(1).map(([x, y]) => `L${x} ${y}`).join(' ')}`;
 
   const [lastX, lastY] = coords[coords.length - 1];
 

@@ -1,10 +1,11 @@
-import Link from "next/link";
-import { ArrowLeft, Package2, Tag } from "lucide-react";
-import ItemDetail from "@/components/admin/item-detail";
-import { ItemUtils } from "@/lib/item-utils";
+import { ArrowLeft, Package2, Tag } from 'lucide-react';
+import Link from 'next/link';
+
+import ItemDetail from '@/components/admin/item-detail';
+import { ItemUtils } from '@/lib/item-utils';
 
 export default async function ItemDetailPage({ params }: { params: { id: string } }) {
-  const { id } = await params
+  const { id } = await params;
   const { item, purchases, stores }  = await ItemUtils.getItemData(id);
 
   if (item) {
@@ -27,7 +28,7 @@ export default async function ItemDetailPage({ params }: { params: { id: string 
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1 rounded-full bg-slate-50 ring-1 ring-slate-200 px-2.5 py-1 text-xs text-slate-700">
                 <Tag className="h-3.5 w-3.5 text-sky-600" />
-                {item.category?.name ?? "Uncategorized"}
+                {item.category?.name ?? 'Uncategorized'}
               </span>
               <span className="inline-flex items-center gap-1 rounded-full bg-slate-50 ring-1 ring-slate-200 px-2.5 py-1 text-xs text-slate-700">
                 Stock: <strong className="tabular-nums">{item.stock}</strong>
