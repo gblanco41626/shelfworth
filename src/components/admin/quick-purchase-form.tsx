@@ -1,14 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
-import { useToast } from '@/hooks/use-toast';
-import { formatCurrency, pricePerUnit } from '@/lib/currency-utils';
+import { useStoreApi, usePurchaseApi } from '@/hooks/api';
+import { formatCurrency, pricePerUnit, totalPrice } from '@/lib/currency-utils';
 import { formatDateForInput } from '@/lib/date-utils';
 
 import { Input, Button } from '../tokens';
 
-import type { Item, Store, CreatePurchaseData } from '@/types';
+import type { Item, Store, Purchase } from '@/types';
 
 interface QuickPurchaseFormProps {
   item: Item,
@@ -16,7 +16,7 @@ interface QuickPurchaseFormProps {
 }
 
 export function QuickPurchaseForm({ item, onSubmit }: QuickPurchaseFormProps) {
-  const [formData, setFormData] = useState<CreatePurchaseData>({
+  const [formData, setFormData] = useState<Partial<Purchase>>({
     itemId: item.id,
     storeId: item.storeId || '',
     brand: '',
@@ -28,7 +28,8 @@ export function QuickPurchaseForm({ item, onSubmit }: QuickPurchaseFormProps) {
   });
 
   const [stores, setStores] = useState<Store[]>([]);
-  const toast = useToast();
+  const storeApi = useStoreApi();
+  const purchaseApi = usePurchaseApi();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,38 +37,17 @@ export function QuickPurchaseForm({ item, onSubmit }: QuickPurchaseFormProps) {
     handleAddPurchase(formData);
   };
 
-  const handleAddPurchase = async (data: CreatePurchaseData) => {
-    try {
-      const response = await fetch('/api/purchases', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-
-      if (response.ok) {
-        toast.success('Purchase added');
-        onSubmit();
-      }
-    } catch (error) {
-      console.error('Error adding item:', error);
-    }
+  const handleAddPurchase = async (data: Partial<Purchase>) => {
+    await purchaseApi.createPurchase(data);
+    onSubmit();
   };
 
-  const fetchStores = async () => {
-    try {
-      const response = await fetch('/api/stores');
-      if (response.ok) {
-        const cats = await response.json();
-        setStores(cats);
-      }
-    } catch (error) {
-      console.error('Error fetching stores:', error);
-    }
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchStores = useCallback(async () => setStores(await storeApi.getStores()), []);
 
   useEffect(() => {
     fetchStores();
-  }, []);
+  }, [fetchStores]);
 
   return (
     <div className="p-4 space-y-4">
@@ -117,7 +97,7 @@ export function QuickPurchaseForm({ item, onSubmit }: QuickPurchaseFormProps) {
         />
         <div className="sm:hidden mt-3 grid grid-cols-3 gap-3 text-xs text-slate-600">
           <p className="uppercase tracking-wide text-slate-400">Total Price</p>
-          <p className="mt-0.5 tabular-nums text-slate-800">{formatCurrency(formData.price * formData.quantity)}</p>
+          <p className="mt-0.5 tabular-nums text-slate-800">{formatCurrency(totalPrice(formData))}</p>
         </div>
         <div className="mt-3 grid grid-cols-3 gap-3 text-xs text-slate-600">
           <p className="uppercase tracking-wide text-slate-400">Price/Unit</p>
@@ -125,7 +105,7 @@ export function QuickPurchaseForm({ item, onSubmit }: QuickPurchaseFormProps) {
         </div>
         <div className="hidden sm:block mt-3 grid grid-cols-3 gap-3 text-xs text-slate-600">
           <p className="uppercase tracking-wide text-slate-400">Total Price</p>
-          <p className="mt-0.5 tabular-nums text-slate-800">{formatCurrency(formData.price * formData.quantity)}</p>
+          <p className="mt-0.5 tabular-nums text-slate-800">{formatCurrency(totalPrice(formData))}</p>
         </div>
         <Input.Select
           label="Store"

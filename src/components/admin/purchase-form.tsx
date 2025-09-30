@@ -1,18 +1,19 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
-import { formatCurrency, pricePerUnit } from '@/lib/currency-utils';
+import { useItemApi, useStoreApi } from '@/hooks/api';
+import { formatCurrency, pricePerUnit, totalPrice } from '@/lib/currency-utils';
 import { formatDateForInput } from '@/lib/date-utils';
 
 import { Input, Button } from '../tokens';
 
-import type { Item, Store, CreatePurchaseData } from '@/types';
+import type { Item, Store, Purchase } from '@/types';
 
 interface PurchaseFormProps {
-  onSubmit: (data: CreatePurchaseData) => void
+  onSubmit: (data: Partial<Purchase>) => void
   onCancel?: () => void
-  initialData?: Partial<CreatePurchaseData>
+  initialData?: Partial<Purchase>
   isEditing?: boolean
 }
 
@@ -22,7 +23,7 @@ export function PurchaseForm({
   initialData,
   isEditing = false,
 }: PurchaseFormProps) {
-  const [formData, setFormData] = useState<CreatePurchaseData>({
+  const [formData, setFormData] = useState<Partial<Purchase>>({
     itemId: '',
     storeId: '',
     brand: '',
@@ -33,36 +34,19 @@ export function PurchaseForm({
     price: 0,
   });
   const [items, setItems] = useState<Item[]>([]);
-  const [stores, setCategories] = useState<Store[]>([]);
+  const [stores, setStores] = useState<Store[]>([]);
+  const itemApi = useItemApi();
+  const storeApi = useStoreApi();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
   };
 
-  const fetchItems = async () => {
-    try {
-      const response = await fetch('/api/items');
-      if (response.ok) {
-        const items = await response.json();
-        setItems(items);
-      }
-    } catch (error) {
-      console.error('Error fetching items:', error);
-    }
-  };
-
-  const fetchStores = async () => {
-    try {
-      const response = await fetch('/api/stores');
-      if (response.ok) {
-        const strs = await response.json();
-        setCategories(strs);
-      }
-    } catch (error) {
-      console.error('Error fetching stores:', error);
-    }
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchItems = useCallback(async () => setItems(await itemApi.getItems()), []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchStores = useCallback(async () => setStores(await storeApi.getStores()), []);
 
   useEffect(() => {
     setFormData({
@@ -80,7 +64,7 @@ export function PurchaseForm({
   useEffect(() => {
     fetchStores();
     fetchItems();
-  }, []);
+  }, [fetchItems, fetchStores]);
 
   return (
     <div>
@@ -143,7 +127,7 @@ export function PurchaseForm({
         />
         <div className="mt-3 grid grid-cols-3 gap-3 text-xs text-slate-600">
           <p className="uppercase tracking-wide text-slate-400">Total Price</p>
-          <p className="mt-0.5 tabular-nums text-slate-800">{formatCurrency(formData.price * formData.quantity)}</p>
+          <p className="mt-0.5 tabular-nums text-slate-800">{formatCurrency(totalPrice(formData))}</p>
         </div>
         <div className="mt-3 grid grid-cols-3 gap-3 text-xs text-slate-600">
           <p className="uppercase tracking-wide text-slate-400">Price/Unit</p>

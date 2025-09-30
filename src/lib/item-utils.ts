@@ -50,6 +50,7 @@ export const ItemUtils = {
       data: {
         stock: { increment: stockIncrement },
         storeId: null,
+        buy: false,
       },
     });
   },

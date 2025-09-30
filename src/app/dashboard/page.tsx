@@ -14,28 +14,34 @@ export default function HomePage() {
   const itemApi = useItemApi();
   const storeApi = useStoreApi();
 
-  const addToShoppingList = async (id: string) => (await itemApi.addToShoppingList(id));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchOutOfStock = useCallback(async () => setOutOfStock(await itemApi.getOutOfStockItems()), []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchShoppingList = useCallback(async () => setShoppingList(await itemApi.getShoppingList()), []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchStores = useCallback(async () => setStores(await storeApi.getStores()), []);
+
+  const refreshList = useCallback(() => {
+    fetchShoppingList();
+    fetchOutOfStock();
+  }, [fetchOutOfStock, fetchShoppingList]);
+
+  const addToShoppingList = async (id: string) => {
+    await itemApi.addToShoppingList(id);
+    refreshList();
+  };
 
   const removeFromShoppingList = async (id: string) => (await itemApi.removeFromShoppingList(id));
 
   const addToStoreCart = async (id: string, storeId: string) => {
     await itemApi.addItemToStoreCart(id, storeId);
-    fetchShoppingList();
-    fetchOutOfStock();
+    refreshList();
   };
 
-  const fetchOutOfStock = useCallback(async () => setOutOfStock(await itemApi.getOutOfStockItems()), [itemApi]);
-
-  const fetchShoppingList = useCallback(async () => setShoppingList(await itemApi.getShoppingList()), [itemApi]);
-
-  const fetchStores = useCallback(async () => setStores(await storeApi.getStores()), [storeApi]);
-
   useEffect(() => {
-    fetchOutOfStock();
-    fetchShoppingList();
+    refreshList();
     fetchStores();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [refreshList, fetchStores]);
 
   return (
     <section className="grid grid-cols-1 xl:grid-cols-3 gap-6">

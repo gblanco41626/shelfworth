@@ -53,6 +53,14 @@ export function usePurchaseApi() {
     try {
       const response = await api.post('/api/purchases', data);
       if (response.status === 201) {
+
+        const itemUpdate = {
+          stockIncrement: data.quantity,
+          storeId: null,
+          buy: false,
+        };
+        await api.put(`/api/items/${data.itemId}`, itemUpdate);
+
         toast.success('Purchase created');
         result = await response.data;
       }

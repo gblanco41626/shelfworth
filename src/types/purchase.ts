@@ -22,31 +22,6 @@ export interface Purchase {
   store?: Store
 }
 
-export interface CreatePurchaseData {
-  itemId: string
-  storeId: string
-  brand?: string
-  unit: string
-  amount: number
-  dateBought?: Date
-  expirationDate?: Date
-  quantity: number
-  storeName?: string
-  price: number
-}
-
-export interface UpdatePurchaseData {
-  storeId: string
-  brand?: string
-  unit?: string
-  amount?: number
-  dateBought?: Date
-  expirationDate?: Date
-  quantity?: number
-  storeName?: string
-  price?: number
-}
-
 export type PurchaseWithRelations = Prisma.PurchaseGetPayload<{
   include: {
     item: true;

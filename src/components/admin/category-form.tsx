@@ -4,12 +4,12 @@ import { useEffect, useState } from 'react';
 
 import { Input, Button } from '../tokens';
 
-import type { CreateCategoryData } from '@/types';
+import type { Category } from '@/types';
 
 interface CategoryFormProps {
-  onSubmit: (data: CreateCategoryData) => void
+  onSubmit: (data: Partial<Category>) => void
   onCancel?: () => void
-  initialData?: Partial<CreateCategoryData>
+  initialData?: Partial<Category>
   isEditing?: boolean
 }
 
@@ -19,7 +19,7 @@ export function CategoryForm({
   initialData,
   isEditing = false,
 }: CategoryFormProps) {
-  const [formData, setFormData] = useState<CreateCategoryData>({
+  const [formData, setFormData] = useState<Partial<Category>>({
     name: '',
   });
 

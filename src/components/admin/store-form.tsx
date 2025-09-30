@@ -4,12 +4,12 @@ import { useEffect, useState } from 'react';
 
 import { Input, Button } from '../tokens';
 
-import type { CreateStoreData } from '@/types';
+import type { Store } from '@/types';
 
 interface StoreFormProps {
-  onSubmit: (data: CreateStoreData) => void
+  onSubmit: (data: Partial<Store>) => void
   onCancel?: () => void
-  initialData?: Partial<CreateStoreData>
+  initialData?: Partial<Store>
   isEditing?: boolean
 }
 
@@ -19,7 +19,7 @@ export function StoreForm({
   initialData,
   isEditing = false,
 }: StoreFormProps) {
-  const [formData, setFormData] = useState<CreateStoreData>({
+  const [formData, setFormData] = useState<Partial<Store>>({
     name: '',
   });
 

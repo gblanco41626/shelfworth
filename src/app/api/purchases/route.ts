@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 
-import { ItemUtils } from '@/lib';
 import { withApiAuth } from '@/lib/api-auth';
 import { db } from '@/lib/db';
 
@@ -51,8 +50,6 @@ export const POST = withApiAuth(async ({ user, request }) => {
       item: { include: { category: true } },
     },
   });
-
-  await ItemUtils.updateItemStock(itemId, quantity);
 
   return NextResponse.json(purchase, { status: 201 });
 });

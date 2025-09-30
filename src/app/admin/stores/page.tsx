@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 
 import { StoreForm } from '@/components/admin/store-form';
 import { Card, Table, IconButton, Icon } from '@/components/tokens';
-import { useStoreApi } from '@/hooks/api/use-store-api';
+import { useStoreApi } from '@/hooks/api';
 
 import type { Store } from '@/types';
 

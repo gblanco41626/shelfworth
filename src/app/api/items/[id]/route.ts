@@ -27,7 +27,7 @@ export const PUT = withApiAuth(async ({ user, request, params }) => {
   const { id } = await params as { id: string };
 
   const body: Partial<Item> = await request.json();
-  const { name, stock, categoryId, buy, storeId } = body;
+  const { name, stock, categoryId, buy, storeId, stockIncrement } = body;
 
   const item = await db.item.update({
     where: { id, userId: user.id },
@@ -37,6 +37,7 @@ export const PUT = withApiAuth(async ({ user, request, params }) => {
       ...(buy !== undefined && { buy }),
       ...(categoryId !== undefined && { categoryId: categoryId || null }),
       ...(storeId !== undefined && { storeId: storeId || null }),
+      ...(stockIncrement && { stock: { increment: stockIncrement } }),
     },
     include: { category: true },
   });

@@ -1,15 +1,17 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+
+import { useCategoryApi } from '@/hooks/api';
 
 import { Input, Button } from '../tokens';
 
-import type { Category, CreateItemData } from '@/types';
+import type { Category, Item } from '@/types';
 
 interface ItemFormProps {
-  onSubmit: (data: CreateItemData) => void
+  onSubmit: (data: Partial<Item>) => void
   onCancel?: () => void
-  initialData?: Partial<CreateItemData>
+  initialData?: Partial<Item>
   isEditing?: boolean
 }
 
@@ -19,29 +21,21 @@ export function ItemForm({
   initialData,
   isEditing = false,
 }: ItemFormProps) {
-  const [formData, setFormData] = useState<CreateItemData>({
+  const [formData, setFormData] = useState<Partial<Item>>({
     name: '',
     stock: 0,
     categoryId: '',
   });
   const [categories, setCategories] = useState<Category[]>([]);
+  const catApi = useCategoryApi();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
   };
 
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch('/api/categories');
-      if (response.ok) {
-        const cats = await response.json();
-        setCategories(cats);
-      }
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-    }
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchCategories = useCallback(async () => setCategories(await catApi.getCategories()), []);
 
   useEffect(() => {
     setFormData({
@@ -53,7 +47,7 @@ export function ItemForm({
 
   useEffect(() => {
     fetchCategories();
-  }, []);
+  }, [fetchCategories]);
 
   return (
     <div>

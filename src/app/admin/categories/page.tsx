@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 
 import { CategoryForm } from '@/components/admin/category-form';
 import { Card, Table, Icon, IconButton } from '@/components/tokens';
-import { useCategoryApi } from '@/hooks/api/use-category-api';
+import { useCategoryApi } from '@/hooks/api';
 
 import type { Category } from '@/types';
 

@@ -8,17 +8,3 @@ export interface Store {
   createdAt: Date
   updatedAt: Date
 }
-
-export interface CreateStoreData {
-  name: string
-}
-
-export interface UpdateStoreData {
-  name: string
-}
-
-export interface Cart {
-  id: string
-  name: string
-  items: Item[]
-}

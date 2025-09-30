@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 
 import { PurchaseForm } from '@/components/admin/purchase-form';
 import { Card, Table, Icon, IconButton, Input } from '@/components/tokens';
-import { usePurchaseApi } from '@/hooks/api/use-purchase-api';
+import { usePurchaseApi } from '@/hooks/api';
 import { formatCurrency, pricePerUnit } from '@/lib/currency-utils';
 import { formatDateForDisplay } from '@/lib/date-utils';
 
