@@ -1,12 +1,45 @@
+'use client';
 import { ArrowLeft, Package2, Tag } from 'lucide-react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { useState, useEffect, useCallback } from 'react';
 
 import ItemDetail from '@/components/admin/item-detail';
-import { ItemUtils } from '@/lib/item-utils';
+import { useItemApi } from '@/hooks/api';
 
-export default async function ItemDetailPage({ params }: { params: { id: string } }) {
-  const { id } = await params;
-  const { item, purchases, stores }  = await ItemUtils.getItemData(id);
+import type { Item, Purchase, Store } from '@/types';
+
+export default function ItemDetailPage() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
+  const itemApi = useItemApi();
+
+  const [item, setItem] = useState<Item | null>(null);
+  const [purchases, setPurchases] = useState<Purchase[] | []>([]);
+  const [stores, setStores] = useState<Store[] | []>([]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchItem = useCallback(async (id: string) => setItem(await itemApi.getItem(id)), []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (id === null) return;
+
+    fetchItem(id);
+  }, [id, fetchItem]);
+
+  useEffect(() => {
+    if (item === null) return;
+    if (item.purchases === undefined) return;
+
+    setPurchases(item.purchases);
+  }, [item]);
+
+  useEffect(() => {
+    if (purchases === null) return;
+
+    setStores(purchases.map((p) => p.store).filter(Boolean) as Store[]);
+  }, [purchases]);
 
   if (item) {
     return (
@@ -38,7 +71,7 @@ export default async function ItemDetailPage({ params }: { params: { id: string 
         </div>
 
         {/* Store filter + inline chart + latest + history */}
-        {purchases.length > 0 && <ItemDetail purchases={purchases} stores={stores ?? []} />}
+        {item.purchases && item.purchases.length > 0 && <ItemDetail purchases={purchases} stores={stores} />}
       </div>
     );
   }

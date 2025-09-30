@@ -9,10 +9,10 @@ import { formatDateForDisplay } from '@/lib/date-utils';
 
 import { Icon } from '../tokens';
 
-import type { Purchase, PurchaseWithRelations, Store } from '@/types';
+import type { Purchase, Store } from '@/types';
 
-function latestByStore(purchases: Purchase[] | PurchaseWithRelations[]) {
-  const map = new Map<string, Purchase | PurchaseWithRelations>();
+function latestByStore(purchases: Purchase[]) {
+  const map = new Map<string, Purchase>();
   for (const p of purchases) {
     const k = p.storeId ?? '__none__';
     const time = new Date(p.dateBought ?? p.createdAt).getTime();
@@ -27,7 +27,7 @@ export default function ItemDetail({
   purchases,
   stores,
 }: {
-  purchases: Purchase[] | PurchaseWithRelations[];
+  purchases: Purchase[];
   stores: Store[] | [];
 }) {
   const [storeFilter, setStoreFilter] = useState<string>('all');
