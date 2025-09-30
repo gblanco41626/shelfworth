@@ -6,7 +6,7 @@ export const formatCurrency = (amount: number) => {
   return isNaN(amount) ? '' : fmt.format(amount);
 };
 
-export const pricePerUnit = (p: Partial<Purchase>) => {
+export const pricePerUnit = (p: Purchase | Partial<Purchase>) => {
   const amount = p.amount || 0;
   const price = p.price || 0;
 
