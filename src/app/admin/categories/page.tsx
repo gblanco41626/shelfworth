@@ -1,90 +1,45 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import { CategoryForm } from '@/components/admin/category-form';
 import { Card, Table, Icon, IconButton } from '@/components/tokens';
-import { useToast } from '@/hooks/use-toast';
+import { useCategoryApi } from '@/hooks/api/use-category-api';
 
-import type { Category, CreateCategoryData } from '@/types';
+import type { Category } from '@/types';
 
 export default function Categories() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const toast = useToast();
+  const catApi = useCategoryApi();
 
-  useEffect(() => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchCategories = useCallback(async () => setCategories(await catApi.getCategories()), []);
+
+  const handleAddCategory = async (data: Partial<Category>) => {
+    await catApi.createCategory(data);
     fetchCategories();
-  }, []);
-
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch('/api/categories');
-      if (response.ok) {
-        const cats = await response.json();
-        setCategories(cats);
-      }
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-    }
   };
 
-  const handleAddCategory = async (data: CreateCategoryData) => {
-    try {
-      const response = await fetch('/api/categories', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-
-      if (response.ok) {
-        toast.success(`Category ${data.name} added`);
-        fetchCategories();
-      }
-    } catch (error) {
-      toast.error(`Failed to add category ${data.name}`);
-      console.error('Error adding category:', error);
-    }
-  };
-
-  const handleUpdateCategory = async (data: CreateCategoryData) => {
+  const handleUpdateCategory = async (data: Partial<Category>) => {
     if (!editingCategory) return;
 
-    try {
-      const response = await fetch(`/api/categories/${editingCategory.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-
-      if (response.ok) {
-        toast.success(`Category ${data.name} updated`);
-        fetchCategories();
-        setEditingCategory(null);
-      }
-    } catch (error) {
-      toast.error(`Failed to update category ${data.name}`);
-      console.error('Error updating category:', error);
-    }
+    await catApi.updateCategory(editingCategory.id, data);
+    fetchCategories();
+    setEditingCategory(null);
   };
 
   const handleDeleteCategory = async (id: string) => {
+    // eslint-disable-next-line no-alert
     if (!confirm('Are you sure? This will also delete all purchases for this category.')) return;
 
-    try {
-      const response = await fetch(`/api/categories/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        toast.success('Category deleted');
-        fetchCategories();
-      }
-    } catch (error) {
-      toast.error('Failed to delete category');
-      console.error('Error deleting category:', error);
-    }
+    await catApi.deleteCategory(id);
+    fetchCategories();
   };
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

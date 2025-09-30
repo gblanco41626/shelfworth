@@ -1,97 +1,44 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 
 import { PurchaseForm } from '@/components/admin/purchase-form';
 import { Card, Table, Icon, IconButton, Input } from '@/components/tokens';
-import { useToast } from '@/hooks/use-toast';
+import { usePurchaseApi } from '@/hooks/api/use-purchase-api';
 import { formatCurrency, pricePerUnit } from '@/lib/currency-utils';
 import { formatDateForDisplay } from '@/lib/date-utils';
 
-import type { Purchase, CreatePurchaseData } from '@/types';
+import type { Purchase } from '@/types';
 
 export default function Purchases() {
   const [purchases, setPurchases] = useState<Purchase[]>([]);
   const [editingPurchase, setEditingPurchase] = useState<Purchase | null>(null);
   const [purchaseQuery, setPurchaseQuery] = useState<string>('');
-  const toast = useToast();
+  const purchaseApi = usePurchaseApi();
 
-  // Fetch data on component mount
-  useEffect(() => {
-    fetchPurchases();
-  }, []);
-
-  const fetchPurchases = async () => {
-    try {
-      const response = await fetch('/api/purchases');
-      if (response.ok) {
-        const purchases = await response.json();
-        setPurchases(purchases);
-      }
-    } catch (error) {
-      console.error('Error fetching purchases:', error);
-    }
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchPurchases = useCallback(async () => setPurchases(await purchaseApi.getPurchases()), []);
 
   // Purchase handlers
-  const handleAddPurchase = async (data: CreatePurchaseData) => {
-    try {
-      const response = await fetch('/api/purchases', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-
-      if (response.ok) {
-        toast.success('Purchase added');
-        fetchPurchases();
-        const createdPurchase = await response.json();
-        setEditingPurchase(createdPurchase);
-      }
-    } catch (error) {
-      toast.error('Failed to add purchase');
-      console.error('Error adding purchase:', error);
-    }
+  const handleAddPurchase = async (data: Partial<Purchase>) => {
+    await purchaseApi.createPurchase(data);
+    fetchPurchases();
   };
 
-  const handleUpdatePurchase = async (data: CreatePurchaseData) => {
+  const handleUpdatePurchase = async (data: Partial<Purchase>) => {
     if (!editingPurchase) return;
 
-    try {
-      const response = await fetch(`/api/purchases/${editingPurchase.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-
-      if (response.ok) {
-        toast.success('Purchase updated');
-        fetchPurchases();
-        setEditingPurchase(null);
-      }
-    } catch (error) {
-      toast.error('Failed to udpate purchase');
-      console.error('Error updating purchase:', error);
-    }
+    await purchaseApi.updatePurchase(editingPurchase.id, data);
+    fetchPurchases();
+    setEditingPurchase(null);
   };
 
   const handleDeletePurchase = async (id: string) => {
+    // eslint-disable-next-line no-alert
     if (!confirm('Are you sure?')) return;
 
-    try {
-      const response = await fetch(`/api/purchases/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        toast.success('Purchase deleted');
-        fetchPurchases();
-        setEditingPurchase(null);
-      }
-    } catch (error) {
-      toast.error('Failed to delete purchase');
-      console.error('Error deleting purchase:', error);
-    }
+    await purchaseApi.deletePurchase(id);
+    fetchPurchases();
   };
 
   const filtered = useMemo(() => (
@@ -102,6 +49,10 @@ export default function Purchases() {
       return name?.includes(q);
     })
   ), [purchases, purchaseQuery]);
+
+  useEffect(() => {
+    fetchPurchases();
+  }, [fetchPurchases]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

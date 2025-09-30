@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import { Card, Icon, IconButton } from '@/components/tokens';
-import { useToast } from '@/hooks/use-toast';
+import { useItemApi, useStoreApi } from '@/hooks/api';
 
 import type { Item, Store } from '@/types';
 
@@ -11,106 +11,30 @@ export default function HomePage() {
   const [outOfStock, setOutOfStock] = useState<Item[]>([]);
   const [shoppingList, setShoppingList] = useState<Item[]>([]);
   const [stores, setStores] = useState<Store[]>([]);
-  const toast = useToast();
+  const itemApi = useItemApi();
+  const storeApi = useStoreApi();
 
-  const addToShoppingList = async (id: string) => {
-    try {
-      const response = await fetch(`/api/items/${id}/shopping-list`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ buy: true }),
-      });
+  const addToShoppingList = async (id: string) => (await itemApi.addToShoppingList(id));
 
-      if (response.ok) {
-        toast.success('Item added to shopping list');
-        fetchShoppingList();
-        fetchOutOfStock();
-      }
-    } catch (error) {
-      toast.error('Failed to add item to shopping list');
-      console.error('Error updating item:', error);
-    }
-  };
-
-  const removeFromShoppingList = async (id: string) => {
-    try {
-      const response = await fetch(`/api/items/${id}/shopping-list`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ buy: false }),
-      });
-
-      if (response.ok) {
-        toast.success('Item removed from shopping list');
-        fetchShoppingList();
-        fetchOutOfStock();
-      }
-    } catch (error) {
-      toast.error('Failed to remove item from shopping list');
-      console.error('Error updating item:', error);
-    }
-  };
+  const removeFromShoppingList = async (id: string) => (await itemApi.removeFromShoppingList(id));
 
   const addToStoreCart = async (id: string, storeId: string) => {
-    try {
-      const response = await fetch(`/api/items/${id}/cart`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ storeId }),
-      });
-
-      if (response.ok) {
-        toast.success('Item added to cart');
-        fetchShoppingList();
-        fetchOutOfStock();
-      }
-    } catch (error) {
-      toast.error('Failed to add item to cart');
-      console.error('Error updating item:', error);
-    }
+    await itemApi.addItemToStoreCart(id, storeId);
+    fetchShoppingList();
+    fetchOutOfStock();
   };
 
-  const fetchOutOfStock = async () => {
-    try {
-      const response = await fetch('/api/items/out-of-stock');
-      if (response.ok) {
-        const items = await response.json();
-        setOutOfStock(items);
-      }
-    } catch (error) {
-      console.error('Error fetching out of stock items:', error);
-    }
-  };
+  const fetchOutOfStock = useCallback(async () => setOutOfStock(await itemApi.getOutOfStockItems()), [itemApi]);
 
-  const fetchShoppingList = async () => {
-    try {
-      const response = await fetch('/api/items/shopping-list');
-      if (response.ok) {
-        const items = await response.json();
-        setShoppingList(items);
-      }
-    } catch (error) {
-      console.error('Error fetching out of stock items:', error);
-    }
-  };
+  const fetchShoppingList = useCallback(async () => setShoppingList(await itemApi.getShoppingList()), [itemApi]);
 
-  const fetchStores = async () => {
-    try {
-      const response = await fetch('/api/stores');
-      if (response.ok) {
-        const strs = await response.json();
-        setStores(strs);
-      }
-    } catch (error) {
-      console.error('Error fetching stores:', error);
-    }
-  };
+  const fetchStores = useCallback(async () => setStores(await storeApi.getStores()), [storeApi]);
 
   useEffect(() => {
     fetchOutOfStock();
     fetchShoppingList();
     fetchStores();
-
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -142,7 +66,9 @@ export default function HomePage() {
                       <IconButton.Delete onClick={() => removeFromShoppingList(item.id)} />
                     </div>
                   </div>
-                  <div className='text-xs'>Costoco</div>
+                  {
+                    item.purchases?.[0] && item.purchases?.[0]?.store && <div className='text-xs'>{ item.purchases[0].store.name }</div>
+                  }
                 </li>
               ))}
           </ul>
@@ -154,7 +80,7 @@ export default function HomePage() {
         icon={<Icon.OutOfStock />}
         actions={<span className="text-xs text-slate-500">{outOfStock.length} items</span>}
       >
-        {outOfStock.length === 0 ? (
+        {outOfStock?.length === 0 ? (
           <div className="text-sm text-slate-500">All good! No out-of-stock items.</div>
         ) : (
           <ul className="space-y-3">

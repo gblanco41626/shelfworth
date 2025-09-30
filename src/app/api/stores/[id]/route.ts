@@ -1,85 +1,49 @@
 import { NextResponse } from 'next/server';
 
+import { withApiAuth } from '@/lib/api-auth';
 import { db } from '@/lib/db';
 
-import type { UpdateStoreData } from '@/types';
-import type { NextRequest } from 'next/server';
+import type { Store } from '@/types';
 
-// GET /api/stores/[id] - Get specific store
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: Promise<{ id: string; }> },
-) {
-  try {
-    const { id } = await params;
+export const GET = withApiAuth(async ({ user, params }) => {
+  const { id } = await params as { id: string };
 
-    const store = await db.store.findUnique({
-      where: { id },
-    });
+  const store = await db.store.findUnique({
+    where: { id, userId: user.id },
+  });
 
-    if (!store) {
-      return NextResponse.json(
-        { error: 'store not found' },
-        { status: 404 },
-      );
-    }
-
-    return NextResponse.json(store);
-  } catch (error) {
-    console.error('Error fetching store:', error);
+  if (!store) {
     return NextResponse.json(
-      { error: 'Failed to fetch store' },
-      { status: 500 },
+      { error: 'store not found' },
+      { status: 404 },
     );
   }
-}
 
-// PUT /api/stores/[id] - Update store
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string; }> },
-) {
-  try {
-    const { id } = await params;
+  return NextResponse.json(store);
+});
 
-    const body: UpdateStoreData = await request.json();
-    const { name } = body;
+export const PUT = withApiAuth(async ({ user, request, params }) => {
+  const { id } = await params as { id: string };
 
-    const store = await db.store.update({
-      where: { id },
-      data: {
-        ...(name && { name }),
-      },
-    });
+  const body: Partial<Store> = await request.json();
+  const { name } = body;
 
-    return NextResponse.json(store);
-  } catch (error) {
-    console.error('Error updating store:', error);
-    return NextResponse.json(
-      { error: 'Failed to update store' },
-      { status: 500 },
-    );
-  }
-}
+  const store = await db.store.update({
+    where: { id, userId: user.id },
+    data: {
+      ...(name && { name }),
+    },
+  });
 
-// DELETE /api/stores/[id] - Delete store
-export async function DELETE(
-  _request: NextRequest,
-  { params }: { params: Promise<{ id: string; }> },
-) {
-  try {
-    const { id } = await params;
+  return NextResponse.json(store);
+});
 
-    await db.store.delete({
-      where: { id },
-    });
+export const DELETE = withApiAuth(async ({ user, params }) => {
+  const { id } = await params as { id: string };
 
-    return NextResponse.json({ message: 'store deleted successfully' });
-  } catch (error) {
-    console.error('Error deleting store:', error);
-    return NextResponse.json(
-      { error: 'Failed to delete store' },
-      { status: 500 },
-    );
-  }
-}
+  await db.store.delete({
+    where: { id, userId: user.id },
+  });
+
+  return NextResponse.json({ deleted: true });
+});

@@ -1,74 +1,55 @@
 import { NextResponse } from 'next/server';
 
-import { TEMP_USER_ID } from '@/lib';
+import { withApiAuth } from '@/lib/api-auth';
 import { db } from '@/lib/db';
 
-import type { CreateItemData } from '@/types';
-import type { NextRequest } from 'next/server';
+import type { Item } from '@/types';
 
-// GET /api/items - Get all items with their purchases
-export async function GET(_request: NextRequest) {
-  try {
-    // For MVP, we'll use a hardcoded userId
-    // TODO: Replace with actual user from session
-    const userId = TEMP_USER_ID;
+export const GET = withApiAuth(async ({ user, request }) => {
+  const { searchParams } = request.nextUrl;
+  const filter = searchParams.get('filter');
 
-    const items = await db.item.findMany({
-      where: { userId },
-      include: {
-        category: true,
-        purchases: {
-          orderBy: { dateBought: { sort: 'desc', nulls: 'last' } },
-        },
+  const items = await db.item.findMany({
+    where: {
+      userId: user.id,
+      ...(filter === 'outofstock' && { stock: 0, buy: false }),
+      ...(filter === 'shoppinglist' && { buy: true, storeId: null }),
+    },
+    include: {
+      category: true,
+      purchases: {
+        orderBy: { dateBought: { sort: 'desc', nulls: 'last' } },
       },
-      orderBy: { createdAt: 'desc' },
-    });
+    },
+    orderBy: { createdAt: 'desc' },
+  });
 
-    return NextResponse.json(items);
-  } catch (error) {
-    console.error('Error fetching items:', error);
+  return NextResponse.json(items);
+});
+
+export const POST = withApiAuth(async ({ user, request }) => {
+  const body: Partial<Item> = await request.json();
+  const { name, categoryId } = body;
+
+  // Basic validation
+  if (!name) {
     return NextResponse.json(
-      { error: 'Failed to fetch items' },
-      { status: 500 },
+      { error: 'Name is required' },
+      { status: 400 },
     );
   }
-}
 
-// POST /api/items - Create new item
-export async function POST(request: NextRequest) {
-  try {
-    const body: CreateItemData = await request.json();
-    const { name, categoryId } = body;
+  const item = await db.item.create({
+    data: {
+      name,
+      categoryId: categoryId || null,
+      userId: user.id,
+    },
+    include: {
+      category: true,
+      purchases: true,
+    },
+  });
 
-    // Basic validation
-    if (!name) {
-      return NextResponse.json(
-        { error: 'Name is required' },
-        { status: 400 },
-      );
-    }
-
-    // For MVP, we'll use a hardcoded userId
-    const userId = TEMP_USER_ID;
-
-    const item = await db.item.create({
-      data: {
-        name,
-        categoryId: categoryId || null,
-        userId,
-      },
-      include: {
-        category: true,
-        purchases: true,
-      },
-    });
-
-    return NextResponse.json(item, { status: 201 });
-  } catch (error) {
-    console.error('Error creating item:', error);
-    return NextResponse.json(
-      { error: 'Failed to add item' },
-      { status: 500 },
-    );
-  }
-}
+  return NextResponse.json(item, { status: 201 });
+});

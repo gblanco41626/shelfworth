@@ -15,6 +15,7 @@ export interface Purchase {
   quantity: number       // How many of this specific item
   price: number         // Price paid for this specific item
   userId: string
+  storeName?: string
   createdAt: Date
   updatedAt: Date
   item?: Item

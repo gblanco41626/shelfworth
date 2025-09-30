@@ -1,57 +1,33 @@
 import { NextResponse } from 'next/server';
 
-import { TEMP_USER_ID } from '@/lib';
+import { withApiAuth } from '@/lib/api-auth';
 import { db } from '@/lib/db';
 
-import type { CreateCategoryData } from '@/types';
-import type { NextRequest } from 'next/server';
+import type { Category } from '@/types';
 
-// GET /api/categories - Get all categories for user
-export async function GET(_request: NextRequest) {
-  try {
-    // For MVP, we'll use a hardcoded userId
-    const userId = TEMP_USER_ID;
+export const GET = withApiAuth(async ({ user }) => {
+  const categories = await db.category.findMany({
+    where: { userId: user.id },
+    orderBy: { name: 'asc' },
+  });
 
-    const categories = await db.category.findMany({
-      where: { userId },
-      orderBy: { name: 'asc' },
-    });
+  return NextResponse.json(categories);
+});
 
-    return NextResponse.json(categories);
-  } catch (error) {
+export const POST = withApiAuth(async ({ user, request }) => {
+  const body: Partial<Category> = await request.json();
+  const { name } = body;
+
+  if (!name) {
     return NextResponse.json(
-      { error: `Failed to fetch categories: ${error}` },
-      { status: 500 },
+      { error: 'Category name is required' },
+      { status: 400 },
     );
   }
-}
 
-// POST /api/categories - Create new category
-export async function POST(request: NextRequest) {
-  try {
-    const body: CreateCategoryData = await request.json();
-    const { name } = body;
+  const category = await db.category.create({
+    data: { name, userId: user.id },
+  });
 
-    if (!name) {
-      return NextResponse.json(
-        { error: 'Category name is required' },
-        { status: 400 },
-      );
-    }
-
-    // For MVP, we'll use a hardcoded userId
-    const userId = TEMP_USER_ID;
-
-    const category = await db.category.create({
-      data: { name, userId },
-    });
-
-    return NextResponse.json(category, { status: 201 });
-  } catch (error) {
-    console.error('Error creating category:', error);
-    return NextResponse.json(
-      { error: 'Failed to add category' },
-      { status: 500 },
-    );
-  }
-}
+  return NextResponse.json(category, { status: 201 });
+});

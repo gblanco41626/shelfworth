@@ -1,85 +1,49 @@
 import { NextResponse } from 'next/server';
 
+import { withApiAuth } from '@/lib/api-auth';
 import { db } from '@/lib/db';
 
-import type { UpdateCategoryData } from '@/types';
-import type { NextRequest } from 'next/server';
+import type { Category } from '@/types';
 
-// GET /api/categories/[id] - Get specific category
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: Promise<{ id: string; }> },
-) {
-  try {
-    const { id } = await params;
+export const GET = withApiAuth(async ({ user, params }) => {
+  const { id } = params as { id: string };
 
-    const category = await db.category.findUnique({
-      where: { id },
-    });
+  const category = await db.category.findUnique({
+    where: { id, userId: user.id },
+  });
 
-    if (!category) {
-      return NextResponse.json(
-        { error: 'category not found' },
-        { status: 404 },
-      );
-    }
-
-    return NextResponse.json(category);
-  } catch (error) {
-    console.error('Error fetching category:', error);
+  if (!category) {
     return NextResponse.json(
-      { error: 'Failed to fetch category' },
-      { status: 500 },
+      { error: 'category not found' },
+      { status: 404 },
     );
   }
-}
 
-// PUT /api/categories/[id] - Update category
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string; }> },
-) {
-  try {
-    const { id } = await params;
+  return NextResponse.json(category);
+});
 
-    const body: UpdateCategoryData = await request.json();
-    const { name } = body;
+export const PUT = withApiAuth(async ({ user, request, params }) => {
+  const { id } = await params as { id: string };
 
-    const category = await db.category.update({
-      where: { id },
-      data: {
-        ...(name && { name }),
-      },
-    });
+  const body: Partial<Category> = await request.json();
+  const { name } = body;
 
-    return NextResponse.json(category);
-  } catch (error) {
-    console.error('Error updating category:', error);
-    return NextResponse.json(
-      { error: 'Failed to update category' },
-      { status: 500 },
-    );
-  }
-}
+  const category = await db.category.update({
+    where: { id, userId: user.id },
+    data: {
+      ...(name && { name }),
+    },
+  });
 
-// DELETE /api/categories/[id] - Delete category
-export async function DELETE(
-  _request: NextRequest,
-  { params }: { params: Promise<{ id: string; }> },
-) {
-  try {
-    const { id } = await params;
+  return NextResponse.json(category);
+});
 
-    await db.category.delete({
-      where: { id },
-    });
+export const DELETE = withApiAuth(async ({ user, params }) => {
+  const { id } = await params as { id: string };
 
-    return NextResponse.json({ message: 'category deleted successfully' });
-  } catch (error) {
-    console.error('Error deleting category:', error);
-    return NextResponse.json(
-      { error: 'Failed to delete category' },
-      { status: 500 },
-    );
-  }
-}
+  await db.category.delete({
+    where: { id, userId: user.id },
+  });
+
+  return NextResponse.json({ deleted: true });
+});

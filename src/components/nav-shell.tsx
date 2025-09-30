@@ -8,6 +8,7 @@ import { signOut } from 'next-auth/react';
 import { useEffect, useRef, useState } from 'react';
 
 import { ToastProvider } from '@/hooks/use-toast';
+import { SIGNIN_URL } from '@/lib';
 
 import { SubTabBar } from './subtab-bar';
 import { IconButton } from './tokens';
@@ -140,7 +141,7 @@ export default function NavShell({
               <NavLinks tabs={mainTabs} orientation="horizontal" />
             </div>
             <div className="flex items-center gap-2" />
-            <IconButton.Logout onClick={() => signOut({ callbackUrl: '/' })} />
+            <IconButton.Logout onClick={() => signOut({ callbackUrl: SIGNIN_URL })} />
           </div>
         </header>
 
@@ -196,7 +197,7 @@ export default function NavShell({
               {/* footer pinned to bottom, logout aligned right */}
               <div className="p-4 border-t border-slate-200">
                 <div className="flex justify-end">
-                  <IconButton.Logout onClick={() => signOut({ callbackUrl: '/' })} />
+                  <IconButton.Logout onClick={() => signOut({ callbackUrl: SIGNIN_URL })} />
                 </div>
               </div>
             </div>

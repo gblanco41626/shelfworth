@@ -1,91 +1,45 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import { StoreForm } from '@/components/admin/store-form';
 import { Card, Table, IconButton, Icon } from '@/components/tokens';
-import { useToast } from '@/hooks/use-toast';
+import { useStoreApi } from '@/hooks/api/use-store-api';
 
-import type { Store, CreateStoreData } from '@/types';
+import type { Store } from '@/types';
 
 export default function Stores() {
   const [stores, setStores] = useState<Store[]>([]);
   const [editingStore, setEditingStore] = useState<Store | null>(null);
-  const toast = useToast();
+  const storeApi = useStoreApi();
 
-  useEffect(() => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchStores = useCallback(async () => setStores(await storeApi.getStores()), []);
+
+  const handleAddStore = async (data: Partial<Store>) => {
+    await storeApi.createStore(data);
     fetchStores();
-  }, []);
-
-  const fetchStores = async () => {
-    try {
-      const response = await fetch('/api/stores');
-      if (response.ok) {
-        const cats = await response.json();
-        setStores(cats);
-      }
-    } catch (error) {
-      console.error('Error fetching stores:', error);
-    }
   };
 
-  const handleAddStore = async (data: CreateStoreData) => {
-    try {
-      const response = await fetch('/api/stores', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-
-      if (response.ok) {
-        toast.success(`Store ${data.name} added`);
-        fetchStores();
-      }
-    } catch (error) {
-      toast.error(`Failed to add store ${data.name}`);
-      console.error('Error adding store:', error);
-    }
-  };
-
-  const handleUpdateStore = async (data: CreateStoreData) => {
+  const handleUpdateStore = async (data: Partial<Store>) => {
     if (!editingStore) return;
 
-    try {
-      const response = await fetch(`/api/stores/${editingStore.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-
-      if (response.ok) {
-        toast.success(`Store ${data.name} created`);
-        fetchStores();
-        setEditingStore(null);
-      }
-    } catch (error) {
-      toast.error(`Failed to update store ${data.name}`);
-      console.error('Error updating store:', error);
-    }
+    await storeApi.updateStore(editingStore.id, data);
+    fetchStores();
+    setEditingStore(null);
   };
 
   const handleDeleteStore = async (id: string) => {
+    // eslint-disable-next-line no-alert
     if (!confirm('Are you sure? This will also delete all purchases for this store.')) return;
 
-    try {
-      const response = await fetch(`/api/stores/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        toast.error('Store deleted');
-        fetchStores();
-      }
-    } catch (error) {
-
-      toast.error('Failed to delete');
-      console.error('Error deleting store:', error);
-    }
+    await storeApi.deleteStore(id);
+    fetchStores();
   };
+
+  useEffect(() => {
+    fetchStores();
+  }, [fetchStores]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

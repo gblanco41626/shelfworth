@@ -1,131 +1,58 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 
 import { ItemForm } from '@/components/admin/item-form';
 import { QuickPurchaseForm } from '@/components/admin/quick-purchase-form';
 import { Card, Table, Icon, IconButton, Input } from '@/components/tokens';
-import { useToast } from '@/hooks/use-toast';
+import { useItemApi } from '@/hooks/api';
 
-import type { Item, CreateItemData } from '@/types';
+import type { Item } from '@/types';
 
 export default function Items() {
   const [items, setItems] = useState<Item[]>([]);
   const [editingItem, setEditingItem] = useState<Item | null>(null);
   const [itemQuery, setItemQuery] = useState<string>('');
   const router = useRouter();
-  const toast = useToast();
+  const itemApi = useItemApi();
 
-  // Fetch data on component mount
-  useEffect(() => {
-    fetchItems();
-  }, []);
-
-  const fetchItems = async () => {
-    try {
-      const response = await fetch('/api/items');
-      if (response.ok) {
-        const items = await response.json();
-        setItems(items);
-      }
-    } catch (error) {
-      console.error('Error fetching items:', error);
-    }
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchItems = useCallback(async () => setItems(await itemApi.getItems()), []);
 
   // Item handlers
-  const handleAddItem = async (data: CreateItemData) => {
-    try {
-      const response = await fetch('/api/items', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-
-      if (response.ok) {
-        fetchItems();
-        const createdItem = await response.json();
-        setEditingItem(createdItem);
-        toast.success(`Item ${data.name} added`);
-      }
-    } catch (error) {
-      toast.error(`Failed to add item ${data.name}`);
-      console.error('Error adding item:', error);
-    }
+  const handleAddItem = async (data: Partial<Item>) => {
+    const createdItem = await itemApi.createItem(data);
+    setEditingItem(createdItem);
+    fetchItems();
   };
 
-  const handleUpdateItem = async (data: CreateItemData) => {
+  const handleUpdateItem = async (data: Partial<Item>) => {
     if (!editingItem) return;
 
-    try {
-      const response = await fetch(`/api/items/${editingItem.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-
-      if (response.ok) {
-        fetchItems();
-        setEditingItem(null);
-        toast.success(`Item ${data.name} updated`);
-      }
-    } catch (error) {
-      toast.error(`Failed to update item ${data.name}`);
-      console.error('Error updating item:', error);
-    }
+    await itemApi.updateItem(editingItem.id, data);
+    fetchItems();
+    setEditingItem(null);
   };
 
   const handleDeleteItem = async (id: string) => {
+    // eslint-disable-next-line no-alert
     if (!confirm('Are you sure? This will also delete all purchases for this item.')) return;
 
-    try {
-      const response = await fetch(`/api/items/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        fetchItems();
-        setEditingItem(null);
-        toast.success('Item deleted');
-      }
-    } catch (error) {
-      toast.error('Failed to delete item');
-      console.error('Error deleting item:', error);
-    }
+    await itemApi.deleteItem(id);
+    fetchItems();
+    setEditingItem(null);
   };
 
   const handleZeroOutStock = async (id: string) => {
-    try {
-      const response = await fetch(`/api/items/${id}/zero-out-stock`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      if (response.ok) {
-        fetchItems();
-      }
-    } catch (error) {
-      console.error('Error updating item:', error);
-    }
+    await itemApi.zeroOutStock(id);
+    fetchItems();
+    setEditingItem(null);
   };
 
   const addToShoppingList = async (id: string) => {
-    try {
-      const response = await fetch(`/api/items/${id}/shopping-list`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ buy: true }),
-      });
-
-      if (response.ok) {
-        toast.success('Item added to shopping list');
-        fetchItems();
-      }
-    } catch (error) {
-      toast.error('Failed to add item to shopping list');
-      console.error('Error updating item:', error);
-    }
+    await itemApi.addToShoppingList(id);
+    fetchItems();
   };
 
   const filtered = useMemo(() => (
@@ -136,6 +63,10 @@ export default function Items() {
         return name.includes(q);
       })
   ), [items, itemQuery]);
+
+  useEffect(() => {
+    fetchItems();
+  }, [fetchItems]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

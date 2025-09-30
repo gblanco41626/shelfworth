@@ -38,11 +38,11 @@ const VARIANT_STYLES: Record<ToastVariant, { wrap: string; icon: React.ElementTy
 
 function positionClass(pos: ToastPosition) {
   switch (pos) {
-    case 'top':         return 'top-4 left-1/2 -translate-x-1/2';
-    case 'top-right':   return 'top-4 right-4';
-    case 'bottom':      return 'bottom-4 left-1/2 -translate-x-1/2';
-    case 'bottom-right':
-    default:            return 'bottom-4 right-4';
+    case 'top':          return 'top-4 left-1/2 -translate-x-1/2';
+    case 'top-right':    return 'top-4 right-4';
+    case 'bottom-right': return 'bottom-4 right-4';
+    case 'bottom':
+    default:            return 'bottom-4 left-1/2 -translate-x-1/2';
   }
 }
 
