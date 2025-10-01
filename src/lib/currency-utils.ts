@@ -14,8 +14,8 @@ export const pricePerUnit = (p: Purchase | Partial<Purchase>) => {
 };
 
 export const totalPrice = (p: Partial<Purchase>) => {
-  const amount = p.amount || 0;
+  const quantity = p.quantity || 0;
   const price = p.price || 0;
 
-  return amount * price;
+  return quantity * price;
 };
