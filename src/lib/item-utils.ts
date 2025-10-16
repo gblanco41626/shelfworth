@@ -1,7 +1,5 @@
 import { db } from '@/lib/db';
 
-import { TEMP_USER_ID } from './constants';
-
 import type { ItemWithRelations, PurchaseWithRelations, Store, Item } from '@/types';
 
 export const ItemUtils = {
@@ -43,31 +41,24 @@ export const ItemUtils = {
     return { item, purchases, stores };
   },
 
-  // Update item stock after purchase changes
-  updateItemStock: async (itemId: string, stockIncrement: number): Promise<void> => {
-    await db.item.update({
-      where: { id: itemId },
-      data: {
-        stock: { increment: stockIncrement },
-        storeId: null,
-        buy: false,
-      },
-    });
-  },
+  // Helper function to sort items by category then name
+  sortItemsByCategoryAndName: (items: Item[]): Item[] => [...items].sort((a: Item, b: Item) => {
+      // Handle undefined categories
+      if (!a.category && !b.category) return 0;
+      if (!a.category) return 1;  // Push undefined to end
+      if (!b.category) return -1; // Push undefined to end
 
-  // Get low stock items (stock below threshold)
-  getLowStockItems: async (threshold: number = 1): Promise<object[]> => await db.item.findMany({
-      where: {
-        userId: TEMP_USER_ID,
-        stock: { lte: threshold },
-      },
-    }),
+      // First, sort by category name
+      const categoryComparison = a.category.name.localeCompare(
+        b.category.name,
+        undefined,
+        { sensitivity: 'base' },
+      );
 
-  // Get out of stock items
-  getOutOfStockItems: async (): Promise<Item[]> => await db.item.findMany({
-      where: {
-        userId: TEMP_USER_ID,
-        stock: 0,
-      },
+      // If categories are different, return the category comparison
+      if (categoryComparison !== 0) return categoryComparison;
+
+      // If categories are the same, sort by item name
+      return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
     }),
 };

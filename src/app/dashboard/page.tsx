@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { Card, Icon, IconButton } from '@/components/tokens';
 import { useItemApi, useStoreApi } from '@/hooks/api';
+import { ItemUtils } from '@/lib';
 
 import type { Item, Store } from '@/types';
 
@@ -38,6 +39,16 @@ export default function HomePage() {
     refreshList();
   };
 
+  const sortedShoppiingList = useMemo(
+    () => ItemUtils.sortItemsByCategoryAndName(shoppingList),
+    [shoppingList],
+  );
+
+  const sortedOutOfStock = useMemo(
+    () => ItemUtils.sortItemsByCategoryAndName(outOfStock),
+    [outOfStock],
+  );
+
   useEffect(() => {
     refreshList();
     fetchStores();
@@ -54,7 +65,7 @@ export default function HomePage() {
           <div className="text-sm text-slate-500">Your shopping list is empty.</div>
         ) : (
           <ul className="space-y-3">
-            {shoppingList.map((item) => (
+            {[...sortedShoppiingList].map((item) => (
                 <li key={item.id} className="flex flex-col justify-between rounded-xl ring-1 ring-slate-200 p-3">
                   <div className='flex items-center justify-between gap-3'>
                     <p className="font-medium text-sm text-slate-800">{item.name}</p>
@@ -72,9 +83,7 @@ export default function HomePage() {
                       <IconButton.Delete onClick={() => removeFromShoppingList(item.id)} />
                     </div>
                   </div>
-                  {
-                    item.purchases?.[0] && item.purchases?.[0]?.store && <div className='text-xs'>{ item.purchases[0].store.name }</div>
-                  }
+                  <div className='mt-0.5 text-xs text-slate-500'>{ item.category?.name }</div>
                 </li>
               ))}
           </ul>
@@ -90,10 +99,15 @@ export default function HomePage() {
           <div className="text-sm text-slate-500">All good! No out-of-stock items.</div>
         ) : (
           <ul className="space-y-3">
-            {outOfStock.map((i) => (
+            {[...sortedOutOfStock].map((i) => (
               <li key={i.id} className="flex items-center justify-between gap-3 rounded-xl ring-1 ring-slate-200 p-3">
-                <p className="font-medium text-sm text-slate-800">{i.name}</p>
-                <IconButton.Shop onClick={() => addToShoppingList(i.id)} />
+                <div className='w-full'>
+                  <div className='flex items-center justify-between gap-3'>
+                    <p className="font-medium text-sm text-slate-800">{i.name}</p>
+                    <IconButton.Shop onClick={() => addToShoppingList(i.id)} />
+                  </div>
+                  <p className="mt-0.5 text-xs text-slate-500">{i.category?.name}</p>
+                </div>
               </li>
             ))}
           </ul>

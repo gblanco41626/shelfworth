@@ -20,7 +20,6 @@ export default function ItemDetailPage() {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchItem = useCallback(async (id: string) => setItem(await itemApi.getItem(id)), []);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (id === null) return;

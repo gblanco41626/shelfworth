@@ -14,9 +14,11 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
+  pages: {
+    signIn: '/signin',
+  },
   callbacks: {
     session: async ({ session, token }) => {
-      // ✅ CRITICAL: Ensure user.id is available in session
       if (session?.user && token?.sub) {
         session.user.id = token.sub;
       }
@@ -27,6 +29,11 @@ export const authOptions: NextAuthOptions = {
         token.uid = user.id;
       }
       return token;
+    },
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith('/')) return `${baseUrl}${url}`;
+      else if (new URL(url).origin === baseUrl) return url;
+      return `${baseUrl}/dashboard`;
     },
   },
   session: {
